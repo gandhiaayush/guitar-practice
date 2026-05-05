@@ -53,7 +53,21 @@ Each song features:
 
 ## How Progressive Mode works
 
-Each time you hit "Struggled" on a transition (e.g. C → D), that pair gets weighted 3x higher in the randomizer. After enough successful reps, the weight drops back down. It learns what's hard for you and drills those changes.
+Progressive mode uses **two signals** to learn what's hard for you:
+
+**Explicit feedback** (manual):
+- Hit "Struggled" on a transition and it gets weighted 3x higher in the randomizer
+- After enough successful "Got It" reps, the weight drops back down
+
+**Implicit audio learning** (automatic, when mic is on):
+- **Wrong chord detected** → auto-marks as a struggle
+- **Slow transitions** (>3s to start playing) → adds struggle points
+- **No sound at all** → adds struggle points
+- **Detection accuracy** (% of times you played the right chord) → factors into chord weighting
+- **Transition speed** (average delay) → slower = higher weight
+- **Tone quality** (buzzy/muted strums) → poor tone = higher weight
+
+So even if you never press "Struggled", the app learns from how you actually play and adapts the randomizer to drill your weak spots. A 🧎 "Audio Learning Active" badge appears when this mode is on.
 
 ## How Chord Detection works
 
