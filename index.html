@@ -545,6 +545,20 @@ body {
 }
 .critique-hint.visible { display: block; }
 
+/* Audio Learning Badge */
+.audio-learning-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: #e8f5ec;
+  color: var(--success);
+  margin-bottom: 8px;
+  display: none;
+}
+.audio-learning-badge.visible { display: inline-block; }
+.audio-learning-badge::before { content: '\1F9E0 '; }
+
 /* Summary Screen */
 .summary-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 4px; }
 .summary-subtitle { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
@@ -713,6 +727,7 @@ body {
     <div class="notation-container" id="notation-display"></div>
 
     <div class="practice-detection-badge" id="practice-detection-badge"></div>
+    <div class="audio-learning-badge" id="audio-learning-badge">Audio Learning Active</div>
     <div class="critique-hint" id="critique-hint"></div>
 
     <div class="practice-mode-toggle" id="practice-mode-toggle" style="display:none;">
@@ -1477,12 +1492,71 @@ function pickNextChord() {
     const weights = available.map(chord => {
       const key = `${state.previousChord}\u2192${chord}`;
       const data = state.transitions[key] || { count: 0, struggles: 0 };
-      if (data.count === 0) return 1;
-      return 1 + (data.struggles / data.count) * 2;
+
+      // Audio-derived difficulty when mic is active
+      let audioDifficulty = 0;
+      if (state.audio.micActive) {
+        const chordSamples = state.audio.samples.filter(s => s.to === chord);
+        if (chordSamples.length >= 2) {
+          // Factor 1: detection accuracy (how often did we play the right chord?)
+          const accuracy = chordSamples.filter(s => s.correct).length / chordSamples.length;
+          audioDifficulty += (1 - accuracy) * 3;
+
+          // Factor 2: transition speed (how long did it take?)
+          const avgDelay = chordSamples.reduce((a, s) => a + (s.delay || 0), 0) / chordSamples.length;
+          if (avgDelay > 2000) audioDifficulty += Math.min(2, (avgDelay - 2000) / 1000);
+
+          // Factor 3: tone quality (buzzy or muted strums)
+          const buzzyMuted = chordSamples.filter(s => s.flatness > 0.15 || s.volume < 0.03).length / chordSamples.length;
+          audioDifficulty += buzzyMuted * 1.5;
+        }
+      }
+
+      // Combine: manual feedback + audio-derived difficulty
+      const manualWeight = data.count === 0 ? 0 : (data.struggles / data.count) * 2;
+      const weight = 1 + manualWeight + audioDifficulty;
+      return Math.max(1, weight);
     });
     return weightedRandom(available, weights);
   }
   return available[Math.floor(Math.random() * available.length)];
+}
+
+// Learn from audio after each transition in progressive mode
+function learnFromAudio() {
+  if (!state.audio.micActive || !state.previousChord || !state.currentChord) return;
+
+  const key = `${state.previousChord}\u2192${state.currentChord}`;
+  if (!state.transitions[key]) state.transitions[key] = { count: 0, struggles: 0 };
+  state.transitions[key].count++;
+
+  // Auto-struggle detection based on audio signals
+  let struggleScore = 0;
+
+  // Wrong chord detected
+  if (state.audio.detectedChord && state.audio.detectedChord !== state.currentChord && state.audio.detectedConfidence > 0.3) {
+    struggleScore += 1;
+  }
+
+  // Slow transition (> 3s to start playing)
+  if (state.audio.transitionDelay > 3000) {
+    struggleScore += 1;
+  }
+
+  // Very slow (> 5s)
+  if (state.audio.transitionDelay > 5000) {
+    struggleScore += 1;
+  }
+
+  // No sound at all played
+  if (!state.audio.isPlaying && state.audio.silenceDuration > state.interval * 800) {
+    struggleScore += 1;
+  }
+
+  // Auto-record struggle if score is high enough
+  if (struggleScore >= 2) {
+    state.transitions[key].struggles++;
+  }
 }
 
 // ==================== UI HELPERS ====================
@@ -1664,6 +1738,7 @@ function startPractice() {
   document.getElementById('practice-mode-toggle').style.display = state.audio.micActive ? 'flex' : 'none';
   document.getElementById('feedback-row').style.display = state.mode === 'progressive' ? 'flex' : 'none';
   document.getElementById('audio-feedback').style.display = state.audio.micActive ? 'block' : 'none';
+  document.getElementById('audio-learning-badge').classList.toggle('visible', state.mode === 'progressive' && state.audio.micActive);
 
   if (state.practiceMode === 'timer') {
     document.getElementById('timer-container').style.display = 'block';
@@ -1719,6 +1794,9 @@ function startTimer() {
   }, 1000);
 
   state.timerId = setInterval(() => {
+    // Auto-learn from audio in progressive mode
+    if (state.mode === 'progressive') learnFromAudio();
+
     // Record the audio sample for this transition
     if (state.audio.micActive && state.previousChord) {
       state.audio.samples.push({
@@ -1804,6 +1882,9 @@ function recordFeedback(gotIt) {
 
 // ==================== PRACTICE LISTEN MODE ====================
 function advancePracticeChord() {
+  // Auto-learn from audio in progressive mode
+  if (state.mode === 'progressive') learnFromAudio();
+
   // Record audio sample
   if (state.audio.micActive && state.previousChord) {
     state.audio.samples.push({
