@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guitar Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FAF8F5;
+  --surface: #FFFFFF;
+  --text: #1A1A1A;
+  --muted: #6B6560;
+  --accent: #C8823B;
+  --accent-light: #F5E6D3;
+  --success: #4A7C59;
+  --danger: #C0392B;
+  --string: #4A4039;
+  --fret: #9A9490;
+  --dot: #C8823B;
+  --dot-stroke: #FFFFFF;
+  --radius: 12px;
+  --shadow: 0 2px 16px rgba(26, 26, 26, 0.08);
+  --shadow-lg: 0 8px 32px rgba(26, 26, 26, 0.12);
+}
+
+body {
+  font-family: 'Instrument Sans', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 640px;
+  padding: 24px;
+  animation: fadeIn 300ms ease-out;
+}
+
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Setup Screen */
+.setup-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.setup-subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 12px;
+  align-self: flex-start;
+}
+
+.chord-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.chord-chip {
+  padding: 8px 14px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 150ms ease;
+  user-select: none;
+}
+
+.chord-chip:hover { border-color: var(--accent); }
+
+.chord-chip.selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.setting-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.setting-option {
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 150ms ease;
+}
+
+.setting-option:hover { border-color: var(--accent); }
+.setting-option.selected {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 14px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  transition: all 150ms ease;
+}
+
+.mode-btn:hover { border-color: var(--accent); }
+.mode-btn.selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.mode-btn-name {
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.mode-btn-desc {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.start-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-top: 8px;
+}
+
+.start-btn:hover { transform: scale(1.02); box-shadow: var(--shadow); }
+.start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* Practice Screen */
+.practice-container {
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chord-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(48px, 12vw, 80px);
+  margin-bottom: 16px;
+  transition: opacity 200ms ease;
+}
+
+.chord-diagram-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: opacity 200ms ease;
+}
+
+.chord-diagram-container svg {
+  display: block;
+}
+
+.timer-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+}
+
+.timer-ring {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.timer-ring-bg {
+  fill: none;
+  stroke: #E5E0DA;
+  stroke-width: 4;
+}
+
+.timer-ring-progress {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Geist Mono', monospace;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.progressive-feedback {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.feedback-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: all 150ms ease;
+}
+
+.feedback-btn:hover { transform: scale(1.02); }
+.feedback-btn.got-it:hover, .feedback-btn.got-it:active {
+  background: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+
+.feedback-btn.struggled:hover, .feedback-btn.struggled:active {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.pause-btn {
+  padding: 10px 20px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted);
+  transition: all 150ms ease;
+}
+
+.pause-btn:hover { border-color: var(--accent); color: var(--text); }
+
+/* Pause Overlay */
+.pause-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(250, 248, 245, 0.95);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 200ms ease-out;
+}
+
+.pause-overlay.active { display: flex; }
+
+.pause-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  margin-bottom: 24px;
+}
+
+.pause-btns {
+  display: flex;
+  gap: 12px;
+}
+
+.resume-btn {
+  padding: 14px 32px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.resume-btn:hover { transform: scale(1.02); }
+
+.end-btn {
+  padding: 14px 32px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 150ms ease;
+}
+
+.end-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+/* Summary Screen */
+.summary-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.stat-value {
+  font-family: 'Geist Mono', monospace;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.struggles-list {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.struggle-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--surface);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.struggle-pair { font-weight: 500; }
+.struggle-rate { color: var(--danger); font-family: 'Geist Mono', monospace; }
+
+.back-btn {
+  padding: 14px 32px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.back-btn:hover { transform: scale(1.02); }
+
+/* Mobile */
+@media (max-width: 480px) {
+  .screen { padding: 16px; }
+  .setup-title { font-size: 24px; }
+  .chord-diagram-container { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Setup Screen -->
+<div id="setup-screen" class="screen active">
+  <h1 class="setup-title">Guitar Practice</h1>
+  <p class="setup-subtitle">Select chords, set your pace, and practice changes.</p>
+
+  <span class="section-label">Chords</span>
+  <div class="chord-grid" id="chord-grid"></div>
+
+  <span class="section-label">Interval</span>
+  <div class="setting-row" id="interval-row"></div>
+
+  <span class="section-label">Mode</span>
+  <div class="mode-toggle" id="mode-toggle"></div>
+
+  <button class="start-btn" id="start-btn" disabled>Start Practice</button>
+</div>
+
+<!-- Practice Screen -->
+<div id="practice-screen" class="screen">
+  <div class="practice-container">
+    <div class="chord-name" id="chord-name"></div>
+    <div class="chord-diagram-container" id="chord-diagram"></div>
+    <div class="timer-container">
+      <svg class="timer-ring" viewBox="0 0 80 80">
+        <circle class="timer-ring-bg" cx="40" cy="40" r="36"/>
+        <circle class="timer-ring-progress" id="timer-progress" cx="40" cy="40" r="36"
+          stroke-dasharray="226.2" stroke-dashoffset="0"/>
+      </svg>
+      <span class="timer-text" id="timer-text"></span>
+    </div>
+    <div class="progressive-feedback" id="feedback-row" style="display: none;">
+      <button class="feedback-btn got-it" id="got-it-btn">Got It</button>
+      <button class="feedback-btn struggled" id="struggled-btn">Struggled</button>
+    </div>
+    <button class="pause-btn" id="pause-btn">Pause</button>
+  </div>
+</div>
+
+<!-- Pause Overlay -->
+<div class="pause-overlay" id="pause-overlay">
+  <h2 class="pause-title">Paused</h2>
+  <div class="pause-btns">
+    <button class="resume-btn" id="resume-btn">Resume</button>
+    <button class="end-btn" id="end-btn">End Session</button>
+  </div>
+</div>
+
+<!-- Summary Screen -->
+<div id="summary-screen" class="screen">
+  <h2 class="summary-title">Session Summary</h2>
+  <div class="stats-grid" id="stats-grid"></div>
+  <div class="struggles-list" id="struggles-list"></div>
+  <button class="back-btn" id="back-btn">Practice Again</button>
+</div>
+
+<script>
+// ==================== CHORD DATA ====================
+const CHORDS = {
+  "C":  { name: "C Major",  frets: [null, 3, 2, 0, 1, 0], fingers: [null, 3, 2, null, 1, null], baseFret: 1 },
+  "D":  { name: "D Major",  frets: [null, null, 0, 2, 3, 2], fingers: [null, null, null, 1, 3, 2], baseFret: 1 },
+  "E":  { name: "E Major",  frets: [0, 2, 2, 1, 0, 0], fingers: [null, 2, 3, 1, null, null], baseFret: 1 },
+  "A":  { name: "A Major",  frets: [null, 0, 2, 2, 2, 0], fingers: [null, null, 1, 2, 3, null], baseFret: 1 },
+  "G":  { name: "G Major",  frets: [3, 2, 0, 0, 0, 3], fingers: [2, 1, null, null, null, 3], baseFret: 1 },
+  "Am": { name: "A Minor",  frets: [null, 0, 2, 2, 1, 0], fingers: [null, null, 2, 3, 1, null], baseFret: 1 },
+  "Em": { name: "E Minor",  frets: [0, 2, 2, 0, 0, 0], fingers: [null, 2, 3, null, null, null], baseFret: 1 },
+  "Dm": { name: "D Minor",  frets: [null, null, 0, 2, 3, 1], fingers: [null, null, null, 2, 3, 1], baseFret: 1 },
+  "F":  { name: "F Major",  frets: [1, 1, 2, 3, 3, 1], fingers: [1, 1, 2, 3, 4, 1], baseFret: 1 },
+  "Bm": { name: "B Minor",  frets: [null, 2, 4, 4, 3, 2], fingers: [null, 1, 3, 4, 2, 1], baseFret: 2 },
+  "B":  { name: "B Major",  frets: [null, 2, 4, 4, 4, 2], fingers: [null, 1, 2, 3, 4, 1], baseFret: 2 },
+  "Cm": { name: "C Minor",  frets: [null, 3, 5, 5, 4, 3], fingers: [null, 1, 3, 4, 2, 1], baseFret: 3 },
+  "D7": { name: "D 7th",    frets: [null, null, 0, 2, 1, 2], fingers: [null, null, null, 2, 1, 3], baseFret: 1 },
+  "A7": { name: "A 7th",    frets: [null, 0, 2, 0, 2, 0], fingers: [null, null, 2, null, 3, null], baseFret: 1 },
+  "E7": { name: "E 7th",    frets: [0, 2, 0, 1, 0, 0], fingers: [null, 2, null, 1, null, null], baseFret: 1 },
+};
+
+const INTERVALS = [3, 5, 10, 15, 20];
+const CHORD_ORDER = ["C", "D", "E", "A", "G", "Am", "Em", "Dm", "F", "Bm", "B", "Cm", "D7", "A7", "E7"];
+
+// ==================== STATE ====================
+let state = {
+  screen: 'setup',
+  selectedChords: [],
+  currentChord: null,
+  previousChord: null,
+  interval: 5,
+  mode: 'random',
+  isRunning: false,
+  timeRemaining: 5,
+  transitions: {},
+  sessionStart: null,
+  totalTransitions: 0,
+  timerId: null,
+  tickId: null,
+  audioCtx: null,
+};
+
+// ==================== SVG RENDERER ====================
+function renderChordDiagram(chordKey, container) {
+  const chord = CHORDS[chordKey];
+  if (!chord) return;
+
+  const stringSpacing = 28;
+  const fretSpacing = 40;
+  const numFrets = 5;
+  const numStrings = 6;
+  const padding = 30;
+  const topPadding = 36;
+
+  const width = (numStrings - 1) * stringSpacing + padding * 2;
+  const height = numFrets * fretSpacing + topPadding + padding;
+
+  const fretsToRender = chord.frets.map((f, i) => {
+    if (f === null || f === 0) return f;
+    return f - chord.baseFret + 1;
+  });
+
+  const maxFret = Math.max(...fretsToRender.filter(f => f !== null && f > 0), numFrets);
+  const actualFrets = Math.max(maxFret, numFrets);
+  const actualHeight = actualFrets * fretSpacing + topPadding + padding;
+
+  let svg = `<svg width="${width}" height="${actualHeight}" viewBox="0 0 ${width} ${actualHeight}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Fret number indicator (for barre chords)
+  if (chord.baseFret > 1) {
+    svg += `<text x="${padding - 14}" y="${topPadding + fretSpacing / 2 + 5}"
+      font-family="Geist Mono, monospace" font-size="12" fill="#6B6560"
+      text-anchor="middle">${chord.baseFret}</text>`;
+  }
+
+  // Nut (only for baseFret = 1)
+  const nutY = topPadding;
+  if (chord.baseFret === 1) {
+    svg += `<rect x="${padding}" y="${nutY - 3}" width="${(numStrings - 1) * stringSpacing}"
+      height="6" fill="#4A4039" rx="1"/>`;
+  }
+
+  // Fret lines
+  for (let f = 1; f <= actualFrets; f++) {
+    const y = topPadding + f * fretSpacing;
+    svg += `<line x1="${padding}" y1="${y}" x2="${padding + (numStrings - 1) * stringSpacing}" y2="${y}"
+      stroke="#9A9490" stroke-width="1.5"/>`;
+  }
+
+  // String lines
+  for (let s = 0; s < numStrings; s++) {
+    const x = padding + s * stringSpacing;
+    svg += `<line x1="${x}" y1="${topPadding}" x2="${x}" y2="${topPadding + actualFrets * fretSpacing}"
+      stroke="#4A4039" stroke-width="2"/>`;
+  }
+
+  // X/O indicators and finger positions
+  for (let s = 0; s < numStrings; s++) {
+    const x = padding + s * stringSpacing;
+    const fret = chord.frets[s];
+    const finger = chord.fingers[s];
+
+    if (fret === null) {
+      // Muted string - X
+      svg += `<text x="${x}" y="${topPadding - 10}" font-family="Instrument Sans, sans-serif"
+        font-size="16" font-weight="500" fill="#6B6560" text-anchor="middle">X</text>`;
+    } else if (fret === 0) {
+      // Open string - O
+      svg += `<circle cx="${x}" cy="${topPadding - 14}" r="6" fill="none" stroke="#6B6560" stroke-width="1.5"/>`;
+    } else {
+      // Fingered position
+      const renderFret = fret - chord.baseFret + 1;
+      const y = topPadding + (renderFret - 0.5) * fretSpacing;
+
+      // Finger dot
+      svg += `<circle cx="${x}" cy="${y}" r="10" fill="#C8823B" stroke="#FFFFFF" stroke-width="2"/>`;
+
+      // Finger number
+      if (finger) {
+        svg += `<text x="${x}" y="${y + 4}" font-family="Geist Mono, monospace"
+          font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">${finger}</text>`;
+      }
+    }
+  }
+
+  // Barre indicator
+  const barreGroups = {};
+  for (let s = 0; s < numStrings; s++) {
+    const fret = chord.frets[s];
+    if (fret !== null && fret > 0) {
+      const renderFret = fret - chord.baseFret + 1;
+      if (!barreGroups[renderFret]) barreGroups[renderFret] = [];
+      barreGroups[renderFret].push(s);
+    }
+  }
+
+  for (const [fret, strings] of Object.entries(barreGroups)) {
+    if (strings.length >= 3) {
+      const minStr = Math.min(...strings);
+      const maxStr = Math.max(...strings);
+      const x1 = padding + minStr * stringSpacing;
+      const x2 = padding + maxStr * stringSpacing;
+      const y = topPadding + (parseInt(fret) - 0.5) * fretSpacing;
+
+      svg += `<rect x="${x1}" y="${y - 10}" width="${x2 - x1}" height="20"
+        rx="10" fill="#C8823B" opacity="0.3"/>`;
+    }
+  }
+
+  svg += '</svg>';
+  container.innerHTML = svg;
+}
+
+// ==================== AUDIO ====================
+function playClick() {
+  try {
+    if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = state.audioCtx.createOscillator();
+    const gain = state.audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(state.audioCtx.destination);
+    osc.frequency.value = 800;
+    gain.gain.value = 0.1;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 0.05);
+    osc.stop(state.audioCtx.currentTime + 0.05);
+  } catch (e) {}
+}
+
+// ==================== WEIGHTED RANDOM ====================
+function weightedRandom(items, weights) {
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < items.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return items[i];
+  }
+  return items[items.length - 1];
+}
+
+function pickNextChord() {
+  const available = state.selectedChords.filter(c => c !== state.currentChord);
+  if (available.length === 0) return state.selectedChords[0];
+
+  if (state.mode === 'progressive') {
+    const weights = available.map(chord => {
+      const key = `${state.previousChord}\u2192${chord}`;
+      const data = state.transitions[key] || { count: 0, struggles: 0 };
+      if (data.count === 0) return 1;
+      return 1 + (data.struggles / data.count) * 2;
+    });
+    return weightedRandom(available, weights);
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+// ==================== UI HELPERS ====================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`${name}-screen`).classList.add('active');
+  state.screen = name;
+}
+
+// ==================== SETUP ====================
+function initSetup() {
+  const grid = document.getElementById('chord-grid');
+  CHORD_ORDER.forEach(key => {
+    const chip = document.createElement('div');
+    chip.className = 'chord-chip';
+    chip.textContent = key;
+    chip.dataset.chord = key;
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+      updateSelectedChords();
+    });
+    grid.appendChild(chip);
+  });
+
+  const intervalRow = document.getElementById('interval-row');
+  INTERVALS.forEach(sec => {
+    const opt = document.createElement('div');
+    opt.className = 'setting-option' + (sec === 5 ? ' selected' : '');
+    opt.textContent = `${sec}s`;
+    opt.dataset.interval = sec;
+    opt.addEventListener('click', () => {
+      intervalRow.querySelectorAll('.setting-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.interval = sec;
+    });
+    intervalRow.appendChild(opt);
+  });
+
+  const modeToggle = document.getElementById('mode-toggle');
+  const modes = [
+    { key: 'random', name: 'Random', desc: 'Random chord changes' },
+    { key: 'progressive', name: 'Progressive', desc: 'Focus on hard transitions' },
+  ];
+  modes.forEach(m => {
+    const btn = document.createElement('div');
+    btn.className = 'mode-btn' + (m.key === 'random' ? ' selected' : '');
+    btn.dataset.mode = m.key;
+    btn.innerHTML = `<span class="mode-btn-name">${m.name}</span><span class="mode-btn-desc">${m.desc}</span>`;
+    btn.addEventListener('click', () => {
+      modeToggle.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.mode = m.key;
+    });
+    modeToggle.appendChild(btn);
+  });
+
+  document.getElementById('start-btn').addEventListener('click', startPractice);
+  document.getElementById('pause-btn').addEventListener('click', pausePractice);
+  document.getElementById('resume-btn').addEventListener('click', resumePractice);
+  document.getElementById('end-btn').addEventListener('click', endSession);
+  document.getElementById('back-btn').addEventListener('click', () => {
+    resetSetup();
+    showScreen('setup');
+  });
+  document.getElementById('got-it-btn').addEventListener('click', () => recordFeedback(true));
+  document.getElementById('struggled-btn').addEventListener('click', () => recordFeedback(false));
+
+  document.addEventListener('keydown', handleKeyboard);
+}
+
+function updateSelectedChords() {
+  const selected = [];
+  document.querySelectorAll('.chord-chip.selected').forEach(chip => {
+    selected.push(chip.dataset.chord);
+  });
+  state.selectedChords = selected;
+  document.getElementById('start-btn').disabled = selected.length < 2;
+}
+
+function resetSetup() {
+  state.isRunning = false;
+  state.currentChord = null;
+  state.previousChord = null;
+  state.transitions = {};
+  state.totalTransitions = 0;
+  if (state.timerId) clearInterval(state.timerId);
+  if (state.tickId) clearInterval(state.tickId);
+}
+
+// ==================== PRACTICE ENGINE ====================
+function startPractice() {
+  if (state.selectedChords.length < 2) return;
+
+  state.isRunning = true;
+  state.sessionStart = Date.now();
+  state.totalTransitions = 0;
+  state.currentChord = state.selectedChords[Math.floor(Math.random() * state.selectedChords.length)];
+  state.previousChord = null;
+
+  showScreen('practice');
+  showCurrentChord();
+  startTimer();
+
+  if (state.mode === 'progressive') {
+    document.getElementById('feedback-row').style.display = 'flex';
+  } else {
+    document.getElementById('feedback-row').style.display = 'none';
+  }
+}
+
+function showCurrentChord() {
+  const chordName = document.getElementById('chord-name');
+  const diagram = document.getElementById('chord-diagram');
+
+  chordName.style.opacity = 0;
+  diagram.style.opacity = 0;
+
+  setTimeout(() => {
+    chordName.textContent = CHORDS[state.currentChord].name;
+    renderChordDiagram(state.currentChord, diagram);
+    chordName.style.opacity = 1;
+    diagram.style.opacity = 1;
+  }, 150);
+}
+
+function startTimer() {
+  state.timeRemaining = state.interval;
+  updateTimerDisplay();
+
+  if (state.timerId) clearInterval(state.timerId);
+  if (state.tickId) clearInterval(state.tickId);
+
+  state.tickId = setInterval(() => {
+    state.timeRemaining--;
+    updateTimerDisplay();
+  }, 1000);
+
+  state.timerId = setInterval(() => {
+    playClick();
+    state.previousChord = state.currentChord;
+    state.currentChord = pickNextChord();
+    state.totalTransitions++;
+    showCurrentChord();
+    state.timeRemaining = state.interval;
+    updateTimerDisplay();
+  }, state.interval * 1000);
+}
+
+function updateTimerDisplay() {
+  const circumference = 2 * Math.PI * 36;
+  const progress = document.getElementById('timer-progress');
+  const text = document.getElementById('timer-text');
+
+  const fraction = state.timeRemaining / state.interval;
+  progress.style.strokeDashoffset = circumference * (1 - fraction);
+  text.textContent = state.timeRemaining;
+}
+
+function pausePractice() {
+  state.isRunning = false;
+  if (state.timerId) clearInterval(state.timerId);
+  if (state.tickId) clearInterval(state.tickId);
+  document.getElementById('pause-overlay').classList.add('active');
+}
+
+function resumePractice() {
+  state.isRunning = true;
+  document.getElementById('pause-overlay').classList.remove('active');
+  startTimer();
+}
+
+function endSession() {
+  state.isRunning = false;
+  if (state.timerId) clearInterval(state.timerId);
+  if (state.tickId) clearInterval(state.tickId);
+  document.getElementById('pause-overlay').classList.remove('active');
+  showSummary();
+}
+
+function recordFeedback(gotIt) {
+  if (state.previousChord && state.currentChord) {
+    const key = `${state.previousChord}\u2192${state.currentChord}`;
+    if (!state.transitions[key]) state.transitions[key] = { count: 0, struggles: 0 };
+    state.transitions[key].count++;
+    if (!gotIt) state.transitions[key].struggles++;
+  }
+}
+
+// ==================== SUMMARY ====================
+function showSummary() {
+  const duration = Math.round((Date.now() - state.sessionStart) / 1000);
+  const minutes = Math.floor(duration / 60);
+  const seconds = duration % 60;
+
+  const struggles = Object.entries(state.transitions)
+    .filter(([, v]) => v.struggles > 0)
+    .sort((a, b) => (b[1].struggles / b[1].count) - (a[1].struggles / a[1].count))
+    .slice(0, 5);
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${state.totalTransitions}</div>
+      <div class="stat-label">Transitions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</div>
+      <div class="stat-label">Duration</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${state.selectedChords.length}</div>
+      <div class="stat-label">Chords</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${state.interval}s</div>
+      <div class="stat-label">Interval</div>
+    </div>
+  `;
+
+  let strugglesHtml = '';
+  if (struggles.length > 0) {
+    strugglesHtml = '<span class="section-label">Focus Areas</span>';
+    struggles.forEach(([pair, data]) => {
+      const rate = Math.round((data.struggles / data.count) * 100);
+      strugglesHtml += `
+        <div class="struggle-item">
+          <span class="struggle-pair">${pair}</span>
+          <span class="struggle-rate">${rate}% struggled</span>
+        </div>
+      `;
+    });
+  }
+  document.getElementById('struggles-list').innerHTML = strugglesHtml;
+
+  showScreen('summary');
+}
+
+// ==================== KEYBOARD SHORTCUTS ====================
+function handleKeyboard(e) {
+  if (state.screen === 'practice' && state.isRunning) {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      pausePractice();
+    } else if (e.key === 'g' || e.key === 'G') {
+      recordFeedback(true);
+    } else if (e.key === 's' || e.key === 'S') {
+      recordFeedback(false);
+    }
+  } else if (state.screen === 'practice' && !state.isRunning) {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      resumePractice();
+    }
+  } else if (state.screen === 'setup' && e.code === 'Escape') {
+    if (state.selectedChords.length >= 2) startPractice();
+  } else if (state.screen === 'summary' && (e.code === 'Enter' || e.code === 'Space')) {
+    e.preventDefault();
+    resetSetup();
+    showScreen('setup');
+  }
+}
+
+// ==================== INIT ====================
+initSetup();
+</script>
+</body>
+</html>
