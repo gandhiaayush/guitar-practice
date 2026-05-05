@@ -37,7 +37,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding: 32px 0;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -100,12 +101,7 @@ body {
 }
 
 .chord-chip:hover { border-color: var(--accent); }
-
-.chord-chip.selected {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-}
+.chord-chip.selected { background: var(--accent); color: white; border-color: var(--accent); }
 
 .setting-row {
   display: flex;
@@ -128,11 +124,7 @@ body {
 }
 
 .setting-option:hover { border-color: var(--accent); }
-.setting-option.selected {
-  background: var(--accent-light);
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.setting-option.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
 
 .mode-toggle {
   display: flex;
@@ -153,23 +145,31 @@ body {
 }
 
 .mode-btn:hover { border-color: var(--accent); }
-.mode-btn.selected {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
+.mode-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+.mode-btn-name { font-size: 14px; font-weight: 600; display: block; margin-bottom: 4px; }
+.mode-btn-desc { font-size: 11px; opacity: 0.8; }
+
+.mic-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
 }
 
-.mode-btn-name {
-  font-size: 14px;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 4px;
-}
+.mic-toggle:hover { border-color: var(--accent); }
+.mic-toggle.active { border-color: var(--success); background: #f0f7f2; }
 
-.mode-btn-desc {
-  font-size: 11px;
-  opacity: 0.8;
-}
+.mic-icon { font-size: 20px; }
+.mic-label { font-size: 13px; font-weight: 500; }
+.mic-desc { font-size: 11px; color: var(--muted); }
+.mic-status { font-size: 11px; color: var(--success); font-weight: 500; }
 
 .start-btn {
   width: 100%;
@@ -210,14 +210,90 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   transition: opacity 200ms ease;
 }
 
-.chord-diagram-container svg {
-  display: block;
+.chord-diagram-container svg { display: block; }
+
+/* Notation Display */
+.notation-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 320px;
 }
 
+.tab-notation {
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 8px;
+  white-space: pre;
+}
+
+.numeric-notation {
+  font-family: 'Geist Mono', monospace;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.staff-notation svg { display: block; margin: 0 auto; }
+
+/* Audio Feedback */
+.audio-feedback {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 16px;
+}
+
+.detection-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.detected-chord {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detected-chord .match { color: var(--success); font-weight: 600; }
+.detected-chord .miss { color: var(--danger); font-weight: 600; }
+.detected-chord .none { color: var(--muted); }
+
+.volume-meter {
+  height: 6px;
+  background: #E5E0DA;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.volume-meter-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 50ms ease;
+}
+
+.transition-timer {
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* Timer Ring */
 .timer-container {
   position: relative;
   width: 80px;
@@ -225,196 +301,326 @@ body {
   margin-bottom: 16px;
 }
 
-.timer-ring {
-  transform: rotate(-90deg);
-  width: 100%;
-  height: 100%;
-}
-
-.timer-ring-bg {
-  fill: none;
-  stroke: #E5E0DA;
-  stroke-width: 4;
-}
-
-.timer-ring-progress {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 4;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear;
-}
-
+.timer-ring { transform: rotate(-90deg); width: 100%; height: 100%; }
+.timer-ring-bg { fill: none; stroke: #E5E0DA; stroke-width: 4; }
+.timer-ring-progress { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
 .timer-text {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Geist Mono', monospace;
-  font-size: 20px;
-  font-weight: 500;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-family: 'Geist Mono', monospace; font-size: 20px; font-weight: 500;
 }
 
-.progressive-feedback {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  width: 100%;
-  max-width: 320px;
-}
-
+.progressive-feedback { display: flex; gap: 12px; margin-bottom: 16px; width: 100%; max-width: 320px; }
 .feedback-btn {
-  flex: 1;
-  padding: 12px;
-  border: 1.5px solid #E5E0DA;
-  border-radius: 10px;
-  background: var(--surface);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: 'Instrument Sans', sans-serif;
-  transition: all 150ms ease;
+  flex: 1; padding: 12px; border: 1.5px solid #E5E0DA; border-radius: 10px;
+  background: var(--surface); cursor: pointer; font-size: 14px; font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif; transition: all 150ms ease;
 }
-
 .feedback-btn:hover { transform: scale(1.02); }
-.feedback-btn.got-it:hover, .feedback-btn.got-it:active {
-  background: var(--success);
-  color: white;
-  border-color: var(--success);
-}
-
-.feedback-btn.struggled:hover, .feedback-btn.struggled:active {
-  background: var(--danger);
-  color: white;
-  border-color: var(--danger);
-}
+.feedback-btn.got-it:hover, .feedback-btn.got-it:active { background: var(--success); color: white; border-color: var(--success); }
+.feedback-btn.struggled:hover, .feedback-btn.struggled:active { background: var(--danger); color: white; border-color: var(--danger); }
 
 .pause-btn {
-  padding: 10px 20px;
-  border: 1.5px solid #E5E0DA;
-  border-radius: 8px;
-  background: var(--surface);
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: 'Instrument Sans', sans-serif;
-  color: var(--muted);
-  transition: all 150ms ease;
+  padding: 10px 20px; border: 1.5px solid #E5E0DA; border-radius: 8px;
+  background: var(--surface); cursor: pointer; font-size: 13px; font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif; color: var(--muted); transition: all 150ms ease;
 }
-
 .pause-btn:hover { border-color: var(--accent); color: var(--text); }
 
 /* Pause Overlay */
 .pause-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(250, 248, 245, 0.95);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  animation: fadeIn 200ms ease-out;
+  position: fixed; inset: 0; background: rgba(250, 248, 245, 0.95);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 100; animation: fadeIn 200ms ease-out;
 }
-
 .pause-overlay.active { display: flex; }
-
-.pause-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: 36px;
-  margin-bottom: 24px;
-}
-
-.pause-btns {
-  display: flex;
-  gap: 12px;
-}
-
+.pause-title { font-family: 'Instrument Serif', serif; font-size: 36px; margin-bottom: 24px; }
+.pause-btns { display: flex; gap: 12px; }
 .resume-btn {
-  padding: 14px 32px;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: 'Instrument Sans', sans-serif;
+  padding: 14px 32px; background: var(--accent); color: white; border: none;
+  border-radius: 10px; font-size: 15px; font-weight: 600; font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer; transition: all 150ms ease;
+}
+.resume-btn:hover { transform: scale(1.02); }
+.end-btn {
+  padding: 14px 32px; border: 1.5px solid #E5E0DA; border-radius: 10px;
+  background: var(--surface); font-size: 15px; font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif; cursor: pointer; color: var(--muted); transition: all 150ms ease;
+}
+.end-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+/* Song Picker Screen */
+.song-picker-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.song-picker-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+.song-card {
+  width: 100%;
+  padding: 16px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 12px;
+  background: var(--surface);
   cursor: pointer;
+  margin-bottom: 12px;
   transition: all 150ms ease;
 }
 
-.resume-btn:hover { transform: scale(1.02); }
+.song-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
 
-.end-btn {
-  padding: 14px 32px;
-  border: 1.5px solid #E5E0DA;
-  border-radius: 10px;
-  background: var(--surface);
-  font-size: 15px;
-  font-weight: 500;
+.song-card-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.song-card-artist { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.song-card-chords {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.song-card-back {
+  margin-top: 8px;
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
   font-family: 'Instrument Sans', sans-serif;
   cursor: pointer;
+}
+.song-card-back:hover { color: var(--text); }
+
+/* Song Practice Screen */
+.song-header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.song-name { font-family: 'Instrument Serif', serif; font-size: 22px; margin-bottom: 2px; }
+.song-artist { font-size: 13px; color: var(--muted); }
+
+.detection-status {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.detection-status.waiting { background: var(--accent-light); color: var(--accent); }
+.detection-status.correct { background: #e8f5ec; color: var(--success); }
+.detection-status.wrong { background: #fde8e6; color: var(--danger); }
+
+.song-progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.song-chord-step {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #E5E0DA;
   color: var(--muted);
   transition: all 150ms ease;
 }
+.song-chord-step.active { background: var(--accent); color: white; }
+.song-chord-step.completed { background: var(--success); color: white; }
+.song-chord-arrow { color: var(--muted); font-size: 12px; }
 
-.end-btn:hover { border-color: var(--danger); color: var(--danger); }
+.song-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+.song-control-btn {
+  padding: 8px 16px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted);
+  transition: all 150ms ease;
+}
+.song-control-btn:hover { border-color: var(--accent); color: var(--text); }
+.song-control-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+.beat-indicator {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 auto 16px;
+  opacity: 0.3;
+  transition: opacity 100ms ease;
+}
+.beat-indicator.pulse { opacity: 1; transform: scale(1.3); }
+
+.strumming-display {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+.strumming-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.strumming-pattern { font-family: 'Geist Mono', monospace; font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.strumming-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.strum-group { display: inline-flex; gap: 1px; }
+.strum-arrow { display: inline-block; padding: 0 2px; transition: all 150ms ease; }
+.strum-arrow.completed { color: var(--success); }
+.strum-arrow.active { color: var(--accent); font-weight: 700; transform: scale(1.15); }
+.strum-arrow.wrong { color: var(--danger); animation: strumShake 300ms ease; }
+@keyframes strumShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.strum-counter { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* Practice Mode Toggle */
+.practice-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+.practice-mode-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted);
+  transition: all 150ms ease;
+  text-align: center;
+}
+.practice-mode-btn:hover { border-color: var(--accent); color: var(--text); }
+.practice-mode-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+/* Practice Detection Badge */
+.practice-detection-badge {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  display: none;
+}
+.practice-detection-badge.visible { display: block; }
+.practice-detection-badge.waiting { background: var(--accent-light); color: var(--accent); }
+.practice-detection-badge.correct { background: #e8f5ec; color: var(--success); }
+.practice-detection-badge.wrong { background: #fde8e6; color: var(--danger); }
+
+/* Real-time Critique Hint */
+.critique-hint {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 320px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  border-left: 3px solid var(--accent);
+  display: none;
+  animation: fadeIn 200ms ease-out;
+}
+.critique-hint.visible { display: block; }
 
 /* Summary Screen */
-.summary-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: 32px;
-  margin-bottom: 24px;
-}
+.summary-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 4px; }
+.summary-subtitle { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
 
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
-.stat-card {
-  background: var(--surface);
-  border-radius: 10px;
-  padding: 16px;
-  text-align: center;
-  box-shadow: var(--shadow);
-}
+.stat-card { background: var(--surface); border-radius: 10px; padding: 16px; text-align: center; box-shadow: var(--shadow); }
+.stat-value { font-family: 'Geist Mono', monospace; font-size: 28px; font-weight: 600; color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-.stat-value {
-  font-family: 'Geist Mono', monospace;
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--accent);
-}
+.accuracy-section { width: 100%; margin-bottom: 16px; }
+.accuracy-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.accuracy-name { font-size: 13px; font-weight: 500; min-width: 70px; }
+.accuracy-bar { flex: 1; height: 8px; background: #E5E0DA; border-radius: 4px; overflow: hidden; }
+.accuracy-bar-fill { height: 100%; border-radius: 4px; transition: width 300ms ease; }
+.accuracy-bar-fill.good { background: var(--success); }
+.accuracy-bar-fill.ok { background: var(--accent); }
+.accuracy-bar-fill.bad { background: var(--danger); }
+.accuracy-pct { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--muted); min-width: 35px; text-align: right; }
 
-.stat-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 4px;
-}
+.struggles-list { width: 100%; margin-bottom: 16px; }
+.section-label { margin-bottom: 10px; }
 
-.struggles-list {
-  width: 100%;
-  margin-bottom: 24px;
-}
-
-.struggle-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 12px;
-  background: var(--surface);
-  border-radius: 8px;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
+.struggle-item { display: flex; justify-content: space-between; padding: 10px 12px; background: var(--surface); border-radius: 8px; margin-bottom: 6px; font-size: 14px; }
 .struggle-pair { font-weight: 500; }
 .struggle-rate { color: var(--danger); font-family: 'Geist Mono', monospace; }
 
+.suggestions-list { width: 100%; margin-bottom: 20px; }
+.suggestion-item {
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-left: 3px solid var(--accent);
+}
+
+.tone-section { width: 100%; margin-bottom: 16px; }
+.tone-row { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--surface); border-radius: 8px; margin-bottom: 4px; font-size: 13px; }
+.tone-label { font-weight: 500; }
+.tone-value { font-family: 'Geist Mono', monospace; }
+
 .back-btn {
+  padding: 14px 32px; background: var(--accent); color: white; border: none;
+  border-radius: 10px; font-size: 15px; font-weight: 600; font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer; transition: all 150ms ease;
+}
+.back-btn:hover { transform: scale(1.02); }
+
+/* Mic permission overlay */
+.mic-overlay {
+  position: fixed; inset: 0; background: rgba(250, 248, 245, 0.97);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 200; animation: fadeIn 200ms ease-out;
+  padding: 24px;
+}
+.mic-overlay.active { display: flex; }
+.mic-overlay-title { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 8px; }
+.mic-overlay-desc { color: var(--muted); font-size: 14px; text-align: center; max-width: 320px; margin-bottom: 24px; line-height: 1.5; }
+.mic-overlay-tip {
+  background: var(--accent-light);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 20px;
+  text-align: center;
+}
+.mic-allow-btn {
   padding: 14px 32px;
   background: var(--accent);
   color: white;
@@ -425,19 +631,44 @@ body {
   font-family: 'Instrument Sans', sans-serif;
   cursor: pointer;
   transition: all 150ms ease;
+  margin-bottom: 12px;
 }
-
-.back-btn:hover { transform: scale(1.02); }
+.mic-allow-btn:hover { transform: scale(1.02); }
+.mic-skip-btn {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+}
+.mic-skip-btn:hover { color: var(--text); }
+.mic-error { color: var(--danger); font-size: 13px; margin-top: 8px; text-align: center; display: none; }
 
 /* Mobile */
 @media (max-width: 480px) {
   .screen { padding: 16px; }
   .setup-title { font-size: 24px; }
   .chord-diagram-container { padding: 16px; }
+  .notation-container { padding: 12px; }
+  .tab-notation { font-size: 11px; }
 }
 </style>
 </head>
 <body>
+
+<!-- Mic Permission Overlay -->
+<div class="mic-overlay" id="mic-overlay">
+  <h2 class="mic-overlay-title">Enable Microphone</h2>
+  <p class="mic-overlay-desc">
+    Listen to your playing to detect chords, track timing, and give you personalized feedback.
+  </p>
+  <div class="mic-overlay-tip">Tip: Find a quiet space for the best results.</div>
+  <button class="mic-allow-btn" id="mic-allow-btn">Allow Microphone</button>
+  <button class="mic-skip-btn" id="mic-skip-btn">Skip for now</button>
+  <div class="mic-error" id="mic-error">Couldn't access microphone. Check browser permissions.</div>
+</div>
 
 <!-- Setup Screen -->
 <div id="setup-screen" class="screen active">
@@ -453,7 +684,25 @@ body {
   <span class="section-label">Mode</span>
   <div class="mode-toggle" id="mode-toggle"></div>
 
+  <div class="mic-toggle" id="mic-toggle">
+    <span class="mic-icon">&#x1F3A4;</span>
+    <div style="flex:1">
+      <div class="mic-label">Microphone Listening</div>
+      <div class="mic-desc">Detect chords, track timing, give feedback</div>
+    </div>
+    <span class="mic-status" id="mic-status">Off</span>
+  </div>
+
   <button class="start-btn" id="start-btn" disabled>Start Practice</button>
+  <button class="song-card-back" id="go-songs-btn" style="margin-top:8px">Practice Songs &#x2192;</button>
+</div>
+
+<!-- Song Picker Screen -->
+<div id="song-picker-screen" class="screen">
+  <h2 class="song-picker-title">Practice a Song</h2>
+  <p class="song-picker-subtitle">Pick a song. The app listens and guides you through each chord.</p>
+  <div id="song-list"></div>
+  <button class="song-card-back" id="back-to-setup">&#x2190; Back</button>
 </div>
 
 <!-- Practice Screen -->
@@ -461,7 +710,27 @@ body {
   <div class="practice-container">
     <div class="chord-name" id="chord-name"></div>
     <div class="chord-diagram-container" id="chord-diagram"></div>
-    <div class="timer-container">
+    <div class="notation-container" id="notation-display"></div>
+
+    <div class="practice-detection-badge" id="practice-detection-badge"></div>
+    <div class="critique-hint" id="critique-hint"></div>
+
+    <div class="practice-mode-toggle" id="practice-mode-toggle" style="display:none;">
+      <button class="practice-mode-btn active" id="practice-timer-btn">&#x23F1; Timer</button>
+      <button class="practice-mode-btn" id="practice-listen-btn">&#x1F3A4; Listen</button>
+    </div>
+
+    <div class="audio-feedback" id="audio-feedback" style="display:none;">
+      <div class="detection-row">
+        <span class="detected-chord" id="detected-chord"></span>
+        <span class="transition-timer" id="transition-timer"></span>
+      </div>
+      <div class="volume-meter">
+        <div class="volume-meter-fill" id="volume-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="timer-container" id="timer-container">
       <svg class="timer-ring" viewBox="0 0 80 80">
         <circle class="timer-ring-bg" cx="40" cy="40" r="36"/>
         <circle class="timer-ring-progress" id="timer-progress" cx="40" cy="40" r="36"
@@ -469,11 +738,49 @@ body {
       </svg>
       <span class="timer-text" id="timer-text"></span>
     </div>
+
     <div class="progressive-feedback" id="feedback-row" style="display: none;">
       <button class="feedback-btn got-it" id="got-it-btn">Got It</button>
       <button class="feedback-btn struggled" id="struggled-btn">Struggled</button>
     </div>
     <button class="pause-btn" id="pause-btn">Pause</button>
+  </div>
+</div>
+
+<!-- Song Practice Screen -->
+<div id="song-practice-screen" class="screen">
+  <div class="practice-container">
+    <div class="song-header">
+      <div class="song-name" id="song-practice-name"></div>
+      <div class="song-artist" id="song-practice-artist"></div>
+    </div>
+
+    <div class="detection-status waiting" id="detection-status">Waiting...</div>
+
+    <div class="chord-name" id="song-chord-name"></div>
+    <div class="chord-diagram-container" id="song-chord-diagram"></div>
+    <div class="notation-container" id="song-notation-display"></div>
+    <div class="strumming-display" id="strumming-display"></div>
+
+    <div class="song-progress-bar" id="song-progress-bar"></div>
+
+    <div class="audio-feedback" id="song-audio-feedback" style="display:none;">
+      <div class="detection-row">
+        <span class="detected-chord" id="song-detected-chord"></span>
+      </div>
+      <div class="volume-meter">
+        <div class="volume-meter-fill" id="song-volume-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="beat-indicator" id="beat-indicator"></div>
+
+    <div class="song-controls">
+      <button class="song-control-btn" id="song-loop-btn">Loop</button>
+      <button class="song-control-btn" id="song-mode-btn">Auto-Advance</button>
+    </div>
+
+    <button class="pause-btn" id="song-pause-btn">Pause</button>
   </div>
 </div>
 
@@ -489,8 +796,12 @@ body {
 <!-- Summary Screen -->
 <div id="summary-screen" class="screen">
   <h2 class="summary-title">Session Summary</h2>
+  <p class="summary-subtitle" id="summary-subtitle"></p>
   <div class="stats-grid" id="stats-grid"></div>
+  <div class="accuracy-section" id="accuracy-section"></div>
+  <div class="tone-section" id="tone-section"></div>
   <div class="struggles-list" id="struggles-list"></div>
+  <div class="suggestions-list" id="suggestions-list"></div>
   <button class="back-btn" id="back-btn">Practice Again</button>
 </div>
 
@@ -514,8 +825,147 @@ const CHORDS = {
   "E7": { name: "E 7th",    frets: [0, 2, 0, 1, 0, 0], fingers: [null, 2, null, 1, null, null], baseFret: 1 },
 };
 
-const INTERVALS = [3, 5, 10, 15, 20];
 const CHORD_ORDER = ["C", "D", "E", "A", "G", "Am", "Em", "Dm", "F", "Bm", "B", "Cm", "D7", "A7", "E7"];
+const INTERVALS = [3, 5, 10, 15, 20];
+
+// ==================== NOTATION DATA ====================
+const TABS = {
+  "C":  "e|---0---|\nB|---1---|\nG|---0---|\nD|---2---|\nA|---3---|\nE|---x---|",
+  "D":  "e|---2---|\nB|---3---|\nG|---2---|\nD|---0---|\nA|---x---|\nE|---x---|",
+  "E":  "e|---0---|\nB|---0---|\nG|---1---|\nD|---2---|\nA|---2---|\nE|---0---|",
+  "A":  "e|---0---|\nB|---2---|\nG|---2---|\nD|---2---|\nA|---0---|\nE|---x---|",
+  "G":  "e|---3---|\nB|---0---|\nG|---0---|\nD|---0---|\nA|---2---|\nE|---3---|",
+  "Am": "e|---0---|\nB|---1---|\nG|---2---|\nD|---2---|\nA|---0---|\nE|---x---|",
+  "Em": "e|---0---|\nB|---0---|\nG|---0---|\nD|---2---|\nA|---2---|\nE|---0---|",
+  "Dm": "e|---1---|\nB|---3---|\nG|---2---|\nD|---0---|\nA|---x---|\nE|---x---|",
+  "F":  "e|---1---|\nB|---1---|\nG|---2---|\nD|---3---|\nA|---3---|\nE|---1---|",
+  "Bm": "e|---2---|\nB|---3---|\nG|---4---|\nD|---4---|\nA|---2---|\nE|---x---|",
+  "B":  "e|---2---|\nB|---4---|\nG|---4---|\nD|---4---|\nA|---2---|\nE|---x---|",
+  "Cm": "e|---3---|\nB|---4---|\nG|---5---|\nD|---5---|\nA|---3---|\nE|---x---|",
+  "D7": "e|---2---|\nB|---1---|\nG|---2---|\nD|---0---|\nA|---x---|\nE|---x---|",
+  "A7": "e|---0---|\nB|---2---|\nG|---0---|\nD|---2---|\nA|---0---|\nE|---x---|",
+  "E7": "e|---0---|\nB|---0---|\nG|---0---|\nD|---1---|\nA|---2---|\nE|---0---|",
+};
+
+const NUMERIC = {
+  "C": "x32010", "D": "xx0232", "E": "022100", "A": "x02220", "G": "320003",
+  "Am": "x02210", "Em": "022000", "Dm": "xx0231", "F": "112331", "Bm": "x24432",
+  "B": "x24442", "Cm": "x35543", "D7": "xx0212", "A7": "x02020", "E7": "020100",
+};
+
+// Standard notation: notes as { note: 'C', octave: 4 } for treble clef staff positions
+const CHORD_NOTES = {
+  "C":  [{note:'E',octave:4},{note:'G',octave:4},{note:'C',octave:5}],
+  "D":  [{note:'D',octave:4},{note:'F#',octave:4},{note:'A',octave:4}],
+  "E":  [{note:'B',octave:3},{note:'E',octave:4},{note:'G#',octave:4}],
+  "A":  [{note:'A',octave:3},{note:'E',octave:4},{note:'A',octave:4}],
+  "G":  [{note:'B',octave:3},{note:'D',octave:4},{note:'G',octave:4}],
+  "Am": [{note:'A',octave:3},{note:'E',octave:4},{note:'A',octave:4}],
+  "Em": [{note:'E',octave:3},{note:'B',octave:3},{note:'E',octave:4}],
+  "Dm": [{note:'D',octave:4},{note:'F',octave:4},{note:'A',octave:4}],
+  "F":  [{note:'F',octave:3},{note:'A',octave:3},{note:'C',octave:4}],
+  "Bm": [{note:'B',octave:3},{note:'D',octave:4},{note:'F#',octave:4}],
+  "B":  [{note:'B',octave:3},{note:'D#',octave:4},{note:'F#',octave:4}],
+  "Cm": [{note:'C',octave:4},{note:'D#',octave:4},{note:'G',octave:4}],
+  "D7": [{note:'D',octave:4},{note:'F#',octave:4},{note:'C',octave:5}],
+  "A7": [{note:'A',octave:3},{note:'C#',octave:4},{note:'E',octave:4}],
+  "E7": [{note:'B',octave:3},{note:'E',octave:4},{note:'G',octave:4}],
+};
+
+// Staff positions: note index where C4=0, D4=2, E4=4, F4=5, G4=7, A4=9, B4=11, C5=12, etc.
+// Treble clef: bottom line = E4 (index 4), top line = F5 (index 29)
+const NOTE_TO_STAFF_POS = {
+  'C': 3, 'C#': 4, 'D': 5, 'D#': 6, 'E': 7, 'F': 8, 'F#': 9,
+  'G': 10, 'G#': 11, 'A': 12, 'A#': 13, 'B': 14,
+};
+function staffPosition(note, octave) {
+  return NOTE_TO_STAFF_POS[note] + (octave - 4) * 12;
+}
+
+// ==================== SONGS DATA ====================
+const SONGS = {
+  "heavens-door": {
+    name: "Knockin' on Heaven's Door",
+    artist: "Bob Dylan",
+    chords: ["G", "D", "Am", "G", "D", "C"],
+    beatsPerChord: 4,
+    strumming: "↓ ↓↑ ↑↓↑",
+    strummingLabel: "Down · Down-Up · Up-Down-Up",
+  },
+  "bad-moon": {
+    name: "Bad Moon Rising",
+    artist: "CCR",
+    chords: ["D", "A", "G", "A", "D", "A", "G", "A"],
+    beatsPerChord: 4,
+    strumming: "↓ ↓ ↑↓ ↑",
+    strummingLabel: "Down · Down-Up · Down-Up",
+  },
+  "three-birds": {
+    name: "Three Little Birds",
+    artist: "Bob Marley",
+    chords: ["A", "D", "E", "A", "D", "E", "A", "D", "E"],
+    beatsPerChord: 4,
+    strumming: "↓   ↑↓ ↑",
+    strummingLabel: "Down · (skip) · Up-Down-Up",
+  },
+};
+
+// Parse strumming pattern into array of { char, direction: 'D'|'U' }
+function parseStrumming(pattern) {
+  const strums = [];
+  for (const ch of pattern) {
+    if (ch === '↓' || ch === 'D') strums.push({ char: ch, direction: 'D' });
+    else if (ch === '↑' || ch === 'U') strums.push({ char: ch, direction: 'U' });
+    else if (ch === ' ' || ch === '\u00B7') strums.push({ char: ch, direction: null });
+  }
+  return strums;
+}
+
+// Pre-compute parsed strumming for each song
+for (const song of Object.values(SONGS)) {
+  song.parsedStrumming = parseStrumming(song.strumming);
+  song.expectedStrums = song.parsedStrumming.filter(s => s.direction !== null).length;
+}
+
+// ==================== CHORD TEMPLATES (Chroma) ====================
+const PITCH_CLASSES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const CHORD_CHROMA = {};
+
+function buildChordTemplates() {
+  for (const [key, chord] of Object.entries(CHORDS)) {
+    const notes = getChordNotes(chord);
+    const chroma = new Float32Array(12);
+    for (const n of notes) {
+      const idx = PITCH_CLASSES.indexOf(n);
+      if (idx >= 0) chroma[idx] = 1.0;
+    }
+    CHORD_CHROMA[key] = chroma;
+  }
+}
+
+function getChordNotes(chord) {
+  const stringFreqs = [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
+  const notes = [];
+  for (let s = 0; s < 6; s++) {
+    if (chord.frets[s] === null || chord.frets[s] < 0) continue;
+    const freq = stringFreqs[s] * Math.pow(2, chord.frets[s] / 12);
+    const semitone = 12 * Math.log2(freq / 440) + 69;
+    const pc = Math.round(semitone) % 12;
+    notes.push(PITCH_CLASSES[pc < 0 ? pc + 12 : pc]);
+  }
+  return [...new Set(notes)];
+}
+
+function cosineSimilarity(a, b) {
+  let dot = 0, na = 0, nb = 0;
+  for (let i = 0; i < 12; i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
+  if (na === 0 || nb === 0) return 0;
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
+}
 
 // ==================== STATE ====================
 let state = {
@@ -525,6 +975,7 @@ let state = {
   previousChord: null,
   interval: 5,
   mode: 'random',
+  practiceMode: 'timer',
   isRunning: false,
   timeRemaining: 5,
   transitions: {},
@@ -532,113 +983,123 @@ let state = {
   totalTransitions: 0,
   timerId: null,
   tickId: null,
-  audioCtx: null,
+  outputCtx: null,
+
+  audio: {
+    stream: null,
+    analyser: null,
+    micActive: false,
+    volume: 0,
+    spectralFlatness: 0,
+    spectralCentroid: 0,
+    detectedChord: null,
+    detectedConfidence: 0,
+    isPlaying: false,
+    transitionStartTime: null,
+    transitionDelay: 0,
+    samples: [],
+    silenceDuration: 0,
+    animFrameId: null,
+    volumeThreshold: 0.02,
+    correctCount: 0,
+    wrongCount: 0,
+    totalDetected: 0,
+    cleanCount: 0,
+    buzzyCount: 0,
+    mutedCount: 0,
+    toneSampled: false,
+    previousRms: 0,
+    lastStrumTime: 0,
+    strumCooldown: 250,
+    practiceChordLocked: false,
+    lastCritiqueHint: 0,
+  },
+
+  song: {
+    currentSong: null,
+    currentChordIndex: 0,
+    tempo: 'medium',
+    songMode: 'listen',
+    songLoop: false,
+    beatCount: 0,
+    beatIntervalId: null,
+    detectionTimeoutId: null,
+    songTransitions: {},
+    songCorrect: 0,
+    songTotal: 0,
+    strumIndex: 0,
+    strumsCorrect: 0,
+    strumsTotal: 0,
+    directionFallback: false,
+    fallbackTimer: null,
+    fallbackTimeout: 5000,
+  },
 };
 
-// ==================== SVG RENDERER ====================
+// ==================== SVG CHORD DIAGRAM ====================
 function renderChordDiagram(chordKey, container) {
   const chord = CHORDS[chordKey];
   if (!chord) return;
 
-  const stringSpacing = 28;
-  const fretSpacing = 40;
-  const numFrets = 5;
-  const numStrings = 6;
-  const padding = 30;
-  const topPadding = 36;
-
+  const stringSpacing = 28, fretSpacing = 40, numStrings = 6, padding = 30, topPadding = 36;
   const width = (numStrings - 1) * stringSpacing + padding * 2;
-  const height = numFrets * fretSpacing + topPadding + padding;
 
-  const fretsToRender = chord.frets.map((f, i) => {
-    if (f === null || f === 0) return f;
-    return f - chord.baseFret + 1;
-  });
-
-  const maxFret = Math.max(...fretsToRender.filter(f => f !== null && f > 0), numFrets);
-  const actualFrets = Math.max(maxFret, numFrets);
+  const actualFrets = Math.max(5, ...chord.frets.filter(f => f !== null && f > 0).map(f => f - chord.baseFret + 1));
   const actualHeight = actualFrets * fretSpacing + topPadding + padding;
 
   let svg = `<svg width="${width}" height="${actualHeight}" viewBox="0 0 ${width} ${actualHeight}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Fret number indicator (for barre chords)
   if (chord.baseFret > 1) {
-    svg += `<text x="${padding - 14}" y="${topPadding + fretSpacing / 2 + 5}"
-      font-family="Geist Mono, monospace" font-size="12" fill="#6B6560"
-      text-anchor="middle">${chord.baseFret}</text>`;
+    svg += `<text x="${padding - 14}" y="${topPadding + fretSpacing / 2 + 5}" font-family="Geist Mono, monospace" font-size="12" fill="#6B6560" text-anchor="middle">${chord.baseFret}</text>`;
   }
 
-  // Nut (only for baseFret = 1)
-  const nutY = topPadding;
   if (chord.baseFret === 1) {
-    svg += `<rect x="${padding}" y="${nutY - 3}" width="${(numStrings - 1) * stringSpacing}"
-      height="6" fill="#4A4039" rx="1"/>`;
+    svg += `<rect x="${padding}" y="${topPadding - 3}" width="${(numStrings - 1) * stringSpacing}" height="6" fill="#4A4039" rx="1"/>`;
   }
 
-  // Fret lines
   for (let f = 1; f <= actualFrets; f++) {
     const y = topPadding + f * fretSpacing;
-    svg += `<line x1="${padding}" y1="${y}" x2="${padding + (numStrings - 1) * stringSpacing}" y2="${y}"
-      stroke="#9A9490" stroke-width="1.5"/>`;
+    svg += `<line x1="${padding}" y1="${y}" x2="${padding + (numStrings - 1) * stringSpacing}" y2="${y}" stroke="#9A9490" stroke-width="1.5"/>`;
   }
 
-  // String lines
   for (let s = 0; s < numStrings; s++) {
     const x = padding + s * stringSpacing;
-    svg += `<line x1="${x}" y1="${topPadding}" x2="${x}" y2="${topPadding + actualFrets * fretSpacing}"
-      stroke="#4A4039" stroke-width="2"/>`;
+    svg += `<line x1="${x}" y1="${topPadding}" x2="${x}" y2="${topPadding + actualFrets * fretSpacing}" stroke="#4A4039" stroke-width="2"/>`;
   }
 
-  // X/O indicators and finger positions
   for (let s = 0; s < numStrings; s++) {
     const x = padding + s * stringSpacing;
     const fret = chord.frets[s];
     const finger = chord.fingers[s];
 
     if (fret === null) {
-      // Muted string - X
-      svg += `<text x="${x}" y="${topPadding - 10}" font-family="Instrument Sans, sans-serif"
-        font-size="16" font-weight="500" fill="#6B6560" text-anchor="middle">X</text>`;
+      svg += `<text x="${x}" y="${topPadding - 10}" font-family="Instrument Sans, sans-serif" font-size="16" font-weight="500" fill="#6B6560" text-anchor="middle">X</text>`;
     } else if (fret === 0) {
-      // Open string - O
       svg += `<circle cx="${x}" cy="${topPadding - 14}" r="6" fill="none" stroke="#6B6560" stroke-width="1.5"/>`;
     } else {
-      // Fingered position
       const renderFret = fret - chord.baseFret + 1;
       const y = topPadding + (renderFret - 0.5) * fretSpacing;
-
-      // Finger dot
       svg += `<circle cx="${x}" cy="${y}" r="10" fill="#C8823B" stroke="#FFFFFF" stroke-width="2"/>`;
-
-      // Finger number
       if (finger) {
-        svg += `<text x="${x}" y="${y + 4}" font-family="Geist Mono, monospace"
-          font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">${finger}</text>`;
+        svg += `<text x="${x}" y="${y + 4}" font-family="Geist Mono, monospace" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">${finger}</text>`;
       }
     }
   }
 
-  // Barre indicator
   const barreGroups = {};
   for (let s = 0; s < numStrings; s++) {
-    const fret = chord.frets[s];
-    if (fret !== null && fret > 0) {
-      const renderFret = fret - chord.baseFret + 1;
-      if (!barreGroups[renderFret]) barreGroups[renderFret] = [];
-      barreGroups[renderFret].push(s);
+    if (chord.frets[s] !== null && chord.frets[s] > 0) {
+      const rf = chord.frets[s] - chord.baseFret + 1;
+      if (!barreGroups[rf]) barreGroups[rf] = [];
+      barreGroups[rf].push(s);
     }
   }
-
   for (const [fret, strings] of Object.entries(barreGroups)) {
     if (strings.length >= 3) {
-      const minStr = Math.min(...strings);
-      const maxStr = Math.max(...strings);
-      const x1 = padding + minStr * stringSpacing;
-      const x2 = padding + maxStr * stringSpacing;
+      const x1 = padding + Math.min(...strings) * stringSpacing;
+      const x2 = padding + Math.max(...strings) * stringSpacing;
       const y = topPadding + (parseInt(fret) - 0.5) * fretSpacing;
-
-      svg += `<rect x="${x1}" y="${y - 10}" width="${x2 - x1}" height="20"
-        rx="10" fill="#C8823B" opacity="0.3"/>`;
+      svg += `<rect x="${x1}" y="${y - 10}" width="${x2 - x1}" height="20" rx="10" fill="#C8823B" opacity="0.3"/>`;
     }
   }
 
@@ -646,20 +1107,356 @@ function renderChordDiagram(chordKey, container) {
   container.innerHTML = svg;
 }
 
-// ==================== AUDIO ====================
-function playClick() {
+// ==================== NOTATION RENDERER ====================
+function renderNotation(chordKey, container) {
+  const tab = TABS[chordKey] || '';
+  const numeric = NUMERIC[chordKey] || '';
+  const notes = CHORD_NOTES[chordKey] || [];
+
+  let html = `<div class="tab-notation">${escHtml(tab)}</div>`;
+  html += `<div class="numeric-notation">${escHtml(numeric)}</div>`;
+  html += `<div class="staff-notation">${renderStaff(notes)}</div>`;
+  container.innerHTML = html;
+}
+
+function renderStaff(notes) {
+  const staffLines = 5;
+  const lineSpacing = 14;
+  const staffHeight = (staffLines - 1) * lineSpacing;
+  const width = 140;
+  const startX = 28;
+  const staffY = 20;
+  const bottomLineY = staffY + staffHeight;
+
+  let svg = `<svg width="${width}" height="${staffHeight + 50}" viewBox="0 0 ${width} ${staffHeight + 50}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Staff lines
+  for (let i = 0; i < staffLines; i++) {
+    const y = staffY + i * lineSpacing;
+    svg += `<line x1="${startX}" y1="${y}" x2="${width - 10}" y2="${y}" stroke="#4A4039" stroke-width="1"/>`;
+  }
+
+  // Treble clef (simplified G clef)
+  svg += `<text x="${startX - 2}" y="${staffY + staffHeight - 4}" font-family="serif" font-size="28" fill="#4A4039">&#x1D11E;</text>`;
+
+  // Notes
+  const centerX = startX + 55;
+  for (let i = 0; i < notes.length; i++) {
+    const note = notes[i];
+    const pos = staffPosition(note.note, note.octave);
+    const noteY = bottomLineY - (pos - 7) * (lineSpacing / 2);
+    const noteX = centerX + i * 22;
+
+    // Ledger lines for notes below staff
+    if (pos < 7) {
+      for (let lp = 6; lp >= pos; lp -= 2) {
+        const ly = bottomLineY - (lp - 7) * (lineSpacing / 2);
+        svg += `<line x1="${noteX - 6}" y1="${ly}" x2="${noteX + 6}" y2="${ly}" stroke="#4A4039" stroke-width="1"/>`;
+      }
+    }
+    // Ledger lines for notes above staff
+    if (pos > 19) {
+      for (let lp = 20; lp <= pos; lp += 2) {
+        const ly = bottomLineY - (lp - 7) * (lineSpacing / 2);
+        svg += `<line x1="${noteX - 6}" y1="${ly}" x2="${noteX + 6}" y2="${ly}" stroke="#4A4039" stroke-width="1"/>`;
+      }
+    }
+
+    svg += `<ellipse cx="${noteX}" cy="${noteY}" rx="5" ry="3.5" fill="#4A4039" transform="rotate(-15, ${noteX}, ${noteY})"/>`;
+  }
+
+  svg += '</svg>';
+  return svg;
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ==================== AUDIO ENGINE ====================
+async function initMic() {
   try {
-    if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = state.audioCtx.createOscillator();
-    const gain = state.audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(state.audioCtx.destination);
-    osc.frequency.value = 800;
-    gain.gain.value = 0.1;
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 0.05);
-    osc.stop(state.audioCtx.currentTime + 0.05);
-  } catch (e) {}
+    state.audio.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if (!state.outputCtx) state.outputCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = state.outputCtx.createMediaStreamSource(state.audio.stream);
+    state.audio.analyser = state.outputCtx.createAnalyser();
+    state.audio.analyser.fftSize = 8192;
+    state.audio.analyser.smoothingTimeConstant = 0.3;
+    source.connect(state.audio.analyser);
+    state.audio.micActive = true;
+    state.audio.animFrameId = requestAnimationFrame(audioLoop);
+    return true;
+  } catch (e) {
+    console.error('Mic error:', e);
+    return false;
+  }
+}
+
+function stopMic() {
+  if (state.audio.animFrameId) cancelAnimationFrame(state.audio.animFrameId);
+  if (state.audio.stream) state.audio.stream.getTracks().forEach(t => t.stop());
+  state.audio.micActive = false;
+  state.audio.analyser = null;
+}
+
+function audioLoop() {
+  if (!state.audio.micActive || !state.audio.analyser) return;
+
+  const analyser = state.audio.analyser;
+  const bufLen = analyser.fftSize;
+  const dataArray = new Float32Array(bufLen);
+  const freqArray = new Float32Array(bufLen / 2);
+
+  analyser.getFloatTimeDomainData(dataArray);
+  analyser.getFloatFrequencyData(freqArray);
+
+  // RMS Volume
+  let sum = 0;
+  for (let i = 0; i < bufLen; i++) sum += dataArray[i] * dataArray[i];
+  state.audio.volume = Math.sqrt(sum / bufLen);
+
+  // Spectral flatness (geometric mean / arithmetic mean)
+  let geoMean = 0, arithMean = 0, count = 0;
+  // Spectral centroid calculation
+  let centroidSum = 0, centroidWeight = 0;
+  const sampleRate = state.outputCtx.sampleRate;
+  const binSize = sampleRate / bufLen;
+  for (let i = 0; i < freqArray.length; i++) {
+    const freq = i * binSize;
+    if (freq < 80 || freq > 2000) continue;
+    const db = freqArray[i];
+    if (db > -100) {
+      const linear = Math.pow(10, db / 20);
+      geoMean += Math.log(linear + 0.0001);
+      arithMean += linear + 0.0001;
+      count++;
+      centroidSum += freq * linear;
+      centroidWeight += linear;
+    }
+  }
+  if (count > 0) {
+    geoMean = Math.exp(geoMean / count);
+    arithMean = arithMean / count;
+    state.audio.spectralFlatness = arithMean > 0 ? geoMean / arithMean : 0;
+  }
+  state.audio.spectralCentroid = centroidWeight > 0 ? centroidSum / centroidWeight : 0;
+
+  // Strum event detection (RMS transient)
+  const rmsDelta = Math.abs(state.audio.volume - state.audio.previousRms);
+  const now = Date.now();
+  const isStrumEvent = rmsDelta > 0.015 && (now - state.audio.lastStrumTime) > state.audio.strumCooldown;
+  if (isStrumEvent) {
+    state.audio.lastStrumTime = now;
+    // Direction detection: spectral centroid normalized to 80-2000 Hz range
+    const normalizedCentroid = (state.audio.spectralCentroid - 80) / (2000 - 80);
+    let detectedDirection = null;
+    if (normalizedCentroid < 0.35) detectedDirection = 'D';
+    else if (normalizedCentroid > 0.55) detectedDirection = 'U';
+    // Feed strum event to song mode handler
+    handleStrumEvent(detectedDirection);
+  }
+  state.audio.previousRms = state.audio.volume;
+
+  // Chord detection via chroma
+  if (state.audio.volume > state.audio.volumeThreshold) {
+    state.audio.isPlaying = true;
+    state.audio.silenceDuration = 0;
+
+    if (state.audio.transitionStartTime && state.audio.transitionDelay === 0) {
+      state.audio.transitionDelay = Date.now() - state.audio.transitionStartTime;
+    }
+
+    const chroma = computeChroma(freqArray, bufLen, sampleRate);
+    const result = matchChord(chroma);
+    state.audio.detectedChord = result.chord;
+    state.audio.detectedConfidence = result.confidence;
+
+    // Record sample — count correct/wrong, NOT tone quality here
+    if (state.currentChord) {
+      state.audio.totalDetected++;
+      if (result.chord === state.currentChord && result.confidence > 0.3) {
+        state.audio.correctCount++;
+      } else if (result.chord && result.confidence > 0.3) {
+        state.audio.wrongCount++;
+      }
+    }
+
+  // Tone quality — sample once per chord transition, not every frame
+  if (state.audio.transitionStartTime && state.audio.transitionDelay > 0 && !state.audio.toneSampled) {
+    state.audio.toneSampled = true;
+    if (state.audio.spectralFlatness > 0.15) {
+      state.audio.buzzyCount++;
+    } else if (state.audio.volume < 0.05) {
+      state.audio.mutedCount++;
+    } else {
+      state.audio.cleanCount++;
+    }
+  }
+
+    updateDetectionUI();
+  } else {
+    state.audio.isPlaying = false;
+    state.audio.silenceDuration += 33;
+    state.audio.detectedChord = null;
+    updateDetectionUI();
+  }
+
+  updateVolumeMeter();
+
+  state.audio.animFrameId = requestAnimationFrame(audioLoop);
+}
+
+function computeChroma(freqArray, bufLen, sampleRate) {
+  const chroma = new Float32Array(12);
+  const binSize = sampleRate / bufLen;
+
+  for (let i = 0; i < freqArray.length; i++) {
+    const freq = i * binSize;
+    if (freq < 80 || freq > 1500) continue;
+
+    const semitone = 12 * Math.log2(freq / 440) + 69;
+    const pc = ((Math.round(semitone) % 12) + 12) % 12;
+
+    const magnitude = Math.pow(10, freqArray[i] / 20);
+    // Weight by proximity to exact semitone
+    const centsOff = Math.abs(semitone - Math.round(semitone)) * 100;
+    const weight = Math.max(0, 1 - centsOff / 50);
+    // Dampen harmonics (higher frequencies get less weight)
+    const harmonicWeight = freq < 500 ? 1.0 : freq < 800 ? 0.7 : 0.4;
+    chroma[pc] += magnitude * weight * harmonicWeight;
+  }
+
+  // Normalize
+  let max = 0;
+  for (let i = 0; i < 12; i++) if (chroma[i] > max) max = chroma[i];
+  if (max > 0) for (let i = 0; i < 12; i++) chroma[i] /= max;
+
+  return chroma;
+}
+
+function matchChord(chroma) {
+  let bestChord = null, bestScore = 0;
+  for (const [key, template] of Object.entries(CHORD_CHROMA)) {
+    const score = cosineSimilarity(chroma, template);
+    if (score > bestScore) { bestScore = score; bestChord = key; }
+  }
+  return { chord: bestScore > 0.25 ? bestChord : null, confidence: bestScore };
+}
+
+function updateDetectionUI() {
+  const el = document.getElementById('detected-chord');
+  if (!el || !state.audio.micActive) return;
+
+  const detected = state.audio.detectedChord;
+  const expected = state.currentChord;
+
+  if (!detected) {
+    el.innerHTML = `<span class="none">Listening...</span>`;
+  } else if (detected === expected) {
+    el.innerHTML = `<span class="match">${CHORDS[detected].name} &#x2714;</span>`;
+  } else {
+    el.innerHTML = `<span class="miss">${CHORDS[detected]?.name || detected} &#x2718; &mdash; expected ${CHORDS[expected]?.name}</span>`;
+  }
+}
+
+function updateVolumeMeter() {
+  const fill = document.getElementById('volume-fill');
+  const songFill = document.getElementById('song-volume-fill');
+  if (fill) fill.style.width = `${Math.min(100, state.audio.volume * 400)}%`;
+  if (songFill) songFill.style.width = `${Math.min(100, state.audio.volume * 400)}%`;
+}
+
+function updateTransitionTimer() {
+  const el = document.getElementById('transition-timer');
+  if (!el) return;
+  if (state.audio.transitionStartTime && state.audio.isPlaying && state.audio.transitionDelay > 0) {
+    el.textContent = `${(state.audio.transitionDelay / 1000).toFixed(1)}s`;
+  } else if (state.audio.transitionStartTime) {
+    const elapsed = ((Date.now() - state.audio.transitionStartTime) / 1000).toFixed(1);
+    el.textContent = `${elapsed}s`;
+  } else {
+    el.textContent = '';
+  }
+}
+
+// ==================== CRITIQUE ENGINE ====================
+function generateCritiques() {
+  const samples = state.audio.samples;
+  const critiques = [];
+  const suggestions = [];
+
+  if (samples.length === 0) return { critiques, suggestions };
+
+  const avgDelay = samples.reduce((a, s) => a + (s.delay || 0), 0) / samples.length;
+  const maxDelay = Math.max(...samples.map(s => s.delay || 0));
+  const buzzyRatio = state.audio.buzzyCount / Math.max(1, state.audio.buzzyCount + state.audio.cleanCount);
+  const mutedRatio = state.audio.mutedCount / Math.max(1, state.audio.mutedCount + state.audio.cleanCount);
+  const accuracy = state.audio.totalDetected > 0 ? state.audio.correctCount / state.audio.totalDetected : 0;
+
+  // Per-transition analysis
+  const transitionData = {};
+  for (const s of samples) {
+    const key = `${s.from}\u2192${s.to}`;
+    if (!transitionData[key]) transitionData[key] = { delays: [], correct: 0, total: 0 };
+    transitionData[key].delays.push(s.delay || 0);
+    transitionData[key].total++;
+    if (s.correct) transitionData[key].correct++;
+  }
+
+  if (avgDelay > 2000) {
+    critiques.push({ label: 'Slow transitions', detail: `${(avgDelay/1000).toFixed(1)}s average delay` });
+    suggestions.push('Prepare the next chord shape in the air before the change comes. Keep fingers close to the fretboard between changes.');
+  }
+
+  if (accuracy < 0.6) {
+    critiques.push({ label: 'Chord accuracy', detail: `${Math.round(accuracy*100)}% correct` });
+    suggestions.push('Slow down the interval. Practice each chord shape individually until you can form it without looking.');
+  }
+
+  if (buzzyRatio > 0.2) {
+    critiques.push({ label: 'String buzzing', detail: `${Math.round(buzzyRatio*100)}% of strums` });
+    suggestions.push('Press your fingers closer to the metal fret wire, not in the middle of the fret space. Increase fretting pressure.');
+  }
+
+  if (mutedRatio > 0.15) {
+    critiques.push({ label: 'Muted strings', detail: `${Math.round(mutedRatio*100)}% of strums` });
+    suggestions.push('Arch your fretting fingers more so they do not touch adjacent strings. Check each string rings clearly.');
+  }
+
+  // Find slowest transitions
+  const slowest = Object.entries(transitionData)
+    .map(([key, data]) => ({ key, avgDelay: data.delays.reduce((a,b) => a+b, 0) / data.delays.length }))
+    .sort((a, b) => b.avgDelay - a.avgDelay)
+    .slice(0, 3);
+
+  const tips = {
+    'C\u2192D': 'Lift all fingers together and place D shape — only the index finger moves significantly.',
+    'C\u2192Am': 'Keep your index and middle fingers in place, just lift your ring finger.',
+    'D\u2192A': 'Slide your whole shape down one string set. Keep the same finger pattern.',
+    'D\u2192G': 'Lift fingers together. Place ring finger on low E first as anchor.',
+    'G\u2192D': 'Lift ring finger off low E, lift middle finger off A — remaining fingers form D.',
+    'G\u2192C': 'Lift middle finger from A string, place ring finger back on A string 3rd fret.',
+    'G\u2192Em': 'Lift middle finger from low E and place on A string 2nd fret. Rest stays.',
+    'A\u2192D': 'Lift fingers, shift up two strings. Keep the triangular finger shape.',
+    'A\u2192E': 'Add index finger to A string 2nd fret, add pinky to B string. Ring finger stays.',
+    'E\u2192A': 'Lift index from G string, shift middle/ring fingers down one string.',
+    'Am\u2192C': 'Move ring finger from B string to A string 3rd fret. Other fingers stay.',
+    'Em\u2192Am': 'Shift middle and ring fingers down one string set. Index finger is new.',
+    'D\u2192Am': 'Keep D string open finger, move others. Only 2 fingers need to move.',
+    'A\u2192D7': 'Lift middle finger from G string. Only one finger moves.',
+    'E\u2192E7': 'Lift middle finger from A string. Easy one-finger change.',
+  };
+
+  for (const s of slowest) {
+    if (s.avgDelay > 1000) {
+      const tip = tips[s.key] || 'Practice this transition slowly, 5 reps at a time.';
+      suggestions.push(`${s.key.replace(/\u2192/g, ' \u2192 ')}: ${(s.avgDelay/1000).toFixed(1)}s avg \u2014 ${tip}`);
+    }
+  }
+
+  if (suggestions.length === 0) {
+    suggestions.push('Great session! Try adding one more chord to your practice set.');
+  }
+
+  return { critiques, suggestions };
 }
 
 // ==================== WEIGHTED RANDOM ====================
@@ -676,7 +1473,6 @@ function weightedRandom(items, weights) {
 function pickNextChord() {
   const available = state.selectedChords.filter(c => c !== state.currentChord);
   if (available.length === 0) return state.selectedChords[0];
-
   if (state.mode === 'progressive') {
     const weights = available.map(chord => {
       const key = `${state.previousChord}\u2192${chord}`;
@@ -686,7 +1482,6 @@ function pickNextChord() {
     });
     return weightedRandom(available, weights);
   }
-
   return available[Math.floor(Math.random() * available.length)];
 }
 
@@ -705,10 +1500,7 @@ function initSetup() {
     chip.className = 'chord-chip';
     chip.textContent = key;
     chip.dataset.chord = key;
-    chip.addEventListener('click', () => {
-      chip.classList.toggle('selected');
-      updateSelectedChords();
-    });
+    chip.addEventListener('click', () => { chip.classList.toggle('selected'); updateSelectedChords(); });
     grid.appendChild(chip);
   });
 
@@ -727,11 +1519,10 @@ function initSetup() {
   });
 
   const modeToggle = document.getElementById('mode-toggle');
-  const modes = [
+  [
     { key: 'random', name: 'Random', desc: 'Random chord changes' },
     { key: 'progressive', name: 'Progressive', desc: 'Focus on hard transitions' },
-  ];
-  modes.forEach(m => {
+  ].forEach(m => {
     const btn = document.createElement('div');
     btn.className = 'mode-btn' + (m.key === 'random' ? ' selected' : '');
     btn.dataset.mode = m.key;
@@ -748,21 +1539,48 @@ function initSetup() {
   document.getElementById('pause-btn').addEventListener('click', pausePractice);
   document.getElementById('resume-btn').addEventListener('click', resumePractice);
   document.getElementById('end-btn').addEventListener('click', endSession);
-  document.getElementById('back-btn').addEventListener('click', () => {
-    resetSetup();
-    showScreen('setup');
-  });
+  document.getElementById('back-btn').addEventListener('click', () => { resetSetup(); showScreen('setup'); });
   document.getElementById('got-it-btn').addEventListener('click', () => recordFeedback(true));
   document.getElementById('struggled-btn').addEventListener('click', () => recordFeedback(false));
+  document.getElementById('go-songs-btn').addEventListener('click', () => showSongPicker());
+  document.getElementById('back-to-setup').addEventListener('click', () => showScreen('setup'));
+
+  // Practice mode toggle
+  document.getElementById('practice-timer-btn').addEventListener('click', () => {
+    state.practiceMode = 'timer';
+    document.getElementById('practice-timer-btn').classList.add('active');
+    document.getElementById('practice-listen-btn').classList.remove('active');
+    document.getElementById('timer-container').style.display = 'block';
+    document.getElementById('practice-detection-badge').classList.remove('visible');
+    if (state.isRunning && state.audio.micActive) {
+      startTimer();
+    }
+  });
+  document.getElementById('practice-listen-btn').addEventListener('click', () => {
+    state.practiceMode = 'listen';
+    document.getElementById('practice-listen-btn').classList.add('active');
+    document.getElementById('practice-timer-btn').classList.remove('active');
+    document.getElementById('timer-container').style.display = 'none';
+    document.getElementById('practice-detection-badge').classList.add('visible');
+    if (state.isRunning) {
+      if (state.timerId) clearInterval(state.timerId);
+      if (state.tickId) clearInterval(state.tickId);
+      state.audio.practiceChordLocked = false;
+      updatePracticeDetectionBadge('waiting', `Playing: ${CHORDS[state.currentChord].name}`);
+    }
+  });
+
+  // Mic toggle
+  document.getElementById('mic-toggle').addEventListener('click', toggleMic);
+  document.getElementById('mic-allow-btn').addEventListener('click', allowMic);
+  document.getElementById('mic-skip-btn').addEventListener('click', skipMic);
 
   document.addEventListener('keydown', handleKeyboard);
 }
 
 function updateSelectedChords() {
   const selected = [];
-  document.querySelectorAll('.chord-chip.selected').forEach(chip => {
-    selected.push(chip.dataset.chord);
-  });
+  document.querySelectorAll('.chord-chip.selected').forEach(chip => selected.push(chip.dataset.chord));
   state.selectedChords = selected;
   document.getElementById('start-btn').disabled = selected.length < 2;
 }
@@ -775,32 +1593,98 @@ function resetSetup() {
   state.totalTransitions = 0;
   if (state.timerId) clearInterval(state.timerId);
   if (state.tickId) clearInterval(state.tickId);
+  resetAudioState();
+}
+
+function resetAudioState() {
+  state.audio.correctCount = 0;
+  state.audio.wrongCount = 0;
+  state.audio.totalDetected = 0;
+  state.audio.cleanCount = 0;
+  state.audio.buzzyCount = 0;
+  state.audio.mutedCount = 0;
+  state.audio.samples = [];
+  state.audio.transitionDelay = 0;
+  state.audio.transitionStartTime = null;
+  state.audio.toneSampled = false;
+  state.audio.previousRms = 0;
+  state.audio.lastStrumTime = 0;
+  state.audio.practiceChordLocked = false;
+  state.audio.lastCritiqueHint = 0;
+}
+
+// ==================== MIC ====================
+function toggleMic() {
+  if (state.audio.micActive) {
+    stopMic();
+    updateMicStatus();
+  } else {
+    document.getElementById('mic-overlay').classList.add('active');
+  }
+}
+
+async function allowMic() {
+  const ok = await initMic();
+  document.getElementById('mic-error').style.display = ok ? 'none' : 'block';
+  if (ok) {
+    document.getElementById('mic-overlay').classList.remove('active');
+    updateMicStatus();
+  }
+}
+
+function skipMic() {
+  document.getElementById('mic-overlay').classList.remove('active');
+}
+
+function updateMicStatus() {
+  const toggle = document.getElementById('mic-toggle');
+  const status = document.getElementById('mic-status');
+  if (state.audio.micActive) {
+    toggle.classList.add('active');
+    status.textContent = 'On';
+    status.style.color = 'var(--success)';
+  } else {
+    toggle.classList.remove('active');
+    status.textContent = 'Off';
+    status.style.color = 'var(--muted)';
+  }
 }
 
 // ==================== PRACTICE ENGINE ====================
 function startPractice() {
   if (state.selectedChords.length < 2) return;
-
   state.isRunning = true;
   state.sessionStart = Date.now();
   state.totalTransitions = 0;
   state.currentChord = state.selectedChords[Math.floor(Math.random() * state.selectedChords.length)];
   state.previousChord = null;
-
+  resetAudioState();
   showScreen('practice');
   showCurrentChord();
-  startTimer();
+  document.getElementById('practice-mode-toggle').style.display = state.audio.micActive ? 'flex' : 'none';
+  document.getElementById('feedback-row').style.display = state.mode === 'progressive' ? 'flex' : 'none';
+  document.getElementById('audio-feedback').style.display = state.audio.micActive ? 'block' : 'none';
 
-  if (state.mode === 'progressive') {
-    document.getElementById('feedback-row').style.display = 'flex';
+  if (state.practiceMode === 'timer') {
+    document.getElementById('timer-container').style.display = 'block';
+    document.getElementById('practice-detection-badge').classList.remove('visible');
+    document.getElementById('practice-timer-btn').classList.add('active');
+    document.getElementById('practice-listen-btn').classList.remove('active');
+    startTimer();
   } else {
-    document.getElementById('feedback-row').style.display = 'none';
+    document.getElementById('timer-container').style.display = 'none';
+    document.getElementById('practice-detection-badge').classList.add('visible');
+    document.getElementById('practice-listen-btn').classList.add('active');
+    document.getElementById('practice-timer-btn').classList.remove('active');
+    state.audio.practiceChordLocked = false;
+    updatePracticeDetectionBadge('waiting', `Playing: ${CHORDS[state.currentChord].name}`);
   }
 }
 
 function showCurrentChord() {
   const chordName = document.getElementById('chord-name');
   const diagram = document.getElementById('chord-diagram');
+  const notation = document.getElementById('notation-display');
 
   chordName.style.opacity = 0;
   diagram.style.opacity = 0;
@@ -808,24 +1692,45 @@ function showCurrentChord() {
   setTimeout(() => {
     chordName.textContent = CHORDS[state.currentChord].name;
     renderChordDiagram(state.currentChord, diagram);
+    renderNotation(state.currentChord, notation);
     chordName.style.opacity = 1;
     diagram.style.opacity = 1;
   }, 150);
+
+  // Reset audio detection timing
+  if (state.audio.micActive) {
+    state.audio.transitionStartTime = Date.now();
+    state.audio.transitionDelay = 0;
+    state.audio.detectedChord = null;
+    state.audio.toneSampled = false;
+  }
 }
 
 function startTimer() {
   state.timeRemaining = state.interval;
   updateTimerDisplay();
-
   if (state.timerId) clearInterval(state.timerId);
   if (state.tickId) clearInterval(state.tickId);
 
   state.tickId = setInterval(() => {
     state.timeRemaining--;
     updateTimerDisplay();
+    if (state.audio.micActive) updateTransitionTimer();
   }, 1000);
 
   state.timerId = setInterval(() => {
+    // Record the audio sample for this transition
+    if (state.audio.micActive && state.previousChord) {
+      state.audio.samples.push({
+        from: state.previousChord,
+        to: state.currentChord,
+        delay: state.audio.transitionDelay || 0,
+        correct: state.audio.detectedChord === state.currentChord && state.audio.detectedConfidence > 0.3,
+        volume: state.audio.volume,
+        flatness: state.audio.spectralFlatness,
+      });
+    }
+
     playClick();
     state.previousChord = state.currentChord;
     state.currentChord = pickNextChord();
@@ -840,7 +1745,6 @@ function updateTimerDisplay() {
   const circumference = 2 * Math.PI * 36;
   const progress = document.getElementById('timer-progress');
   const text = document.getElementById('timer-text');
-
   const fraction = state.timeRemaining / state.interval;
   progress.style.strokeDashoffset = circumference * (1 - fraction);
   text.textContent = state.timeRemaining;
@@ -850,19 +1754,30 @@ function pausePractice() {
   state.isRunning = false;
   if (state.timerId) clearInterval(state.timerId);
   if (state.tickId) clearInterval(state.tickId);
+  if (state.song.fallbackTimer) clearTimeout(state.song.fallbackTimer);
   document.getElementById('pause-overlay').classList.add('active');
 }
 
 function resumePractice() {
   state.isRunning = true;
   document.getElementById('pause-overlay').classList.remove('active');
-  startTimer();
+  if (state.practiceMode === 'timer') {
+    startTimer();
+  } else if (state.practiceMode === 'listen') {
+    state.audio.practiceChordLocked = false;
+    updatePracticeDetectionBadge('waiting', `Playing: ${CHORDS[state.currentChord].name}`);
+  }
+  if (state.screen === 'song-practice') {
+    if (state.song.songMode === 'auto') startSongBeatTimer();
+  }
 }
 
 function endSession() {
   state.isRunning = false;
   if (state.timerId) clearInterval(state.timerId);
   if (state.tickId) clearInterval(state.tickId);
+  if (state.song.beatIntervalId) clearInterval(state.song.beatIntervalId);
+  if (state.song.fallbackTimer) clearTimeout(state.song.fallbackTimer);
   document.getElementById('pause-overlay').classList.remove('active');
   showSummary();
 }
@@ -873,84 +1788,552 @@ function recordFeedback(gotIt) {
     if (!state.transitions[key]) state.transitions[key] = { count: 0, struggles: 0 };
     state.transitions[key].count++;
     if (!gotIt) state.transitions[key].struggles++;
+
+    if (state.audio.micActive) {
+      state.audio.samples.push({
+        from: state.previousChord,
+        to: state.currentChord,
+        delay: state.audio.transitionDelay || 0,
+        correct: gotIt,
+        volume: state.audio.volume,
+        flatness: state.audio.spectralFlatness,
+      });
+    }
   }
+}
+
+// ==================== PRACTICE LISTEN MODE ====================
+function advancePracticeChord() {
+  // Record audio sample
+  if (state.audio.micActive && state.previousChord) {
+    state.audio.samples.push({
+      from: state.previousChord,
+      to: state.currentChord,
+      delay: state.audio.transitionDelay || 0,
+      correct: state.audio.detectedChord === state.currentChord,
+      volume: state.audio.volume,
+      flatness: state.audio.spectralFlatness,
+    });
+  }
+
+  playClick();
+  state.previousChord = state.currentChord;
+  state.currentChord = pickNextChord();
+  state.totalTransitions++;
+  showCurrentChord();
+  state.audio.practiceChordLocked = false;
+  updatePracticeDetectionBadge('waiting', `Playing: ${CHORDS[state.currentChord].name}`);
+}
+
+function updatePracticeDetectionBadge(type, text) {
+  const badge = document.getElementById('practice-detection-badge');
+  if (!badge) return;
+  badge.className = `practice-detection-badge visible ${type}`;
+  badge.textContent = text;
+}
+
+function showRealtimeCritique() {
+  const el = document.getElementById('critique-hint');
+  if (!el || !state.audio.micActive) return;
+  const now = Date.now();
+  if (now - state.audio.lastCritiqueHint < 4000) return;
+
+  let hint = null;
+  if (state.audio.buzzyCount > 2 && (state.audio.buzzyCount / Math.max(1, state.audio.buzzyCount + state.audio.cleanCount)) > 0.2) {
+    hint = 'Press fingers closer to the fret wire to reduce buzzing.';
+  } else if (state.audio.mutedCount > 1 && (state.audio.mutedCount / Math.max(1, state.audio.mutedCount + state.audio.cleanCount)) > 0.15) {
+    hint = 'Arch your fingers more to avoid muting adjacent strings.';
+  } else if (state.audio.transitionDelay > 3000) {
+    hint = 'Prepare the next chord shape in the air before the change.';
+  } else if (state.audio.wrongCount > state.audio.correctCount) {
+    hint = 'Slow down. Practice the chord shape until you can form it without looking.';
+  } else if (state.audio.silenceDuration > 5000) {
+    hint = 'Keep strumming! Even quiet practice counts.';
+  }
+
+  if (hint) {
+    el.textContent = hint;
+    el.classList.add('visible');
+    state.audio.lastCritiqueHint = now;
+  }
+}
+
+// ==================== STRUM DETECTION ENGINE ====================
+function handleStrumEvent(detectedDirection) {
+  if (state.screen !== 'song-practice') return;
+  if (state.song.songMode !== 'listen') return;
+
+  const song = SONGS[state.song.currentSong];
+  if (!song) return;
+  const parsed = song.parsedStrumming;
+  const expected = song.expectedStrums;
+
+  // Start fallback timer on first strum
+  if (state.song.strumIndex === 0 && !state.song.fallbackTimer && !state.song.directionFallback) {
+    state.song.fallbackTimer = setTimeout(() => {
+      state.song.directionFallback = true;
+      state.song.fallbackTimer = null;
+    }, state.song.fallbackTimeout);
+  }
+
+  if (state.song.directionFallback) {
+    // Fallback mode: just count strum events
+    state.song.strumIndex++;
+    state.song.strumsTotal++;
+    renderStrummingDisplay(parsed, state.song.strumIndex, expected);
+    updateSongDetectionStatus('waiting', `Strumming... ${state.song.strumIndex}/${expected}`);
+    if (state.song.strumIndex >= expected) {
+      onStrumPatternComplete();
+    }
+    return;
+  }
+
+  // Direction detection mode
+  if (!detectedDirection) return;
+
+  // Find the next expected direction (skip null/spaces)
+  let nextExpectedDir = null;
+  let nextIdx = state.song.strumIndex;
+  while (nextIdx < parsed.length) {
+    if (parsed[nextIdx].direction !== null) {
+      nextExpectedDir = parsed[nextIdx].direction;
+      break;
+    }
+    nextIdx++;
+  }
+
+  if (!nextExpectedDir) {
+    onStrumPatternComplete();
+    return;
+  }
+
+  if (detectedDirection === nextExpectedDir) {
+    // Correct direction
+    state.song.strumIndex = nextIdx + 1;
+    state.song.strumsCorrect++;
+    state.song.strumsTotal++;
+    renderStrummingDisplay(parsed, state.song.strumIndex, expected);
+    updateSongDetectionStatus('correct', `${detectedDirection === 'D' ? 'Down' : 'Up'}stroke \u2714`);
+    pulseBeat();
+
+    // Check if pattern complete
+    let remaining = 0;
+    for (let i = state.song.strumIndex; i < parsed.length; i++) {
+      if (parsed[i].direction !== null) remaining++;
+    }
+    if (remaining === 0) {
+      onStrumPatternComplete();
+    } else {
+      updateSongDetectionStatus('waiting', `${state.song.strumsTotal}/${expected} strums`);
+    }
+  } else {
+    // Wrong direction
+    state.song.strumsTotal++;
+    renderStrummingDisplay(parsed, state.song.strumIndex, expected, true);
+    updateSongDetectionStatus('wrong', `Expected ${nextExpectedDir === 'D' ? '\u2193' : '\u2191'} \u2014 try again`);
+
+    // If too many wrong directions, trigger fallback
+    if (state.song.strumsTotal - state.song.strumsCorrect >= 3) {
+      state.song.directionFallback = true;
+      if (state.song.fallbackTimer) { clearTimeout(state.song.fallbackTimer); state.song.fallbackTimer = null; }
+      renderStrummingDisplay(parsed, state.song.strumIndex, expected);
+      updateSongDetectionStatus('waiting', `Counting strums... ${state.song.strumIndex}/${expected}`);
+    }
+  }
+}
+
+function onStrumPatternComplete() {
+  if (state.song.fallbackTimer) { clearTimeout(state.song.fallbackTimer); state.song.fallbackTimer = null; }
+  // Verify chord is correct before advancing
+  if (state.audio.detectedChord === state.currentChord && state.audio.detectedConfidence > 0.3) {
+    updateSongDetectionStatus('correct', `${CHORDS[state.currentChord].name} \u2714 \u2014 nice!`);
+    setTimeout(() => advanceSongChord(), 800);
+  } else {
+    // Chord wrong but pattern done, give benefit of doubt
+    state.song.songTotal++;
+    setTimeout(() => advanceSongChord(), 1000);
+  }
+}
+
+function renderStrummingDisplay(parsed, currentIndex, expected, showWrong) {
+  const strumEl = document.getElementById('strumming-display');
+  if (!strumEl) return;
+
+  let html = '<div class="strumming-label">Strumming Pattern</div><div class="strumming-pattern">';
+
+  // Group by visual spaces
+  const song = SONGS[state.song.currentSong];
+  if (!song) return;
+
+  let strumCount = 0;
+  let passedCurrent = false;
+  let groupStart = true;
+
+  for (let i = 0; i < parsed.length; i++) {
+    const s = parsed[i];
+    if (s.direction === null) {
+      // Space/skip
+      if (!groupStart) { html += '</span>'; groupStart = true; }
+      html += '  ';
+      continue;
+    }
+
+    if (groupStart) { html += '<span class="strum-group">'; groupStart = false; }
+
+    let cls = 'strum-arrow';
+    if (strumCount < currentIndex) cls += ' completed';
+    else if (strumCount === currentIndex && showWrong) cls += ' wrong';
+    else if (strumCount === currentIndex) cls += ' active';
+
+    html += `<span class="${cls}">${escHtml(s.char)}</span>`;
+    strumCount++;
+  }
+  if (!groupStart) html += '</span>';
+
+  html += '</div>';
+  html += `<div class="strumming-hint">${escHtml(song.strummingLabel)}</div>`;
+  html += `<div class="strum-counter">${Math.min(currentIndex, expected)}/${expected} strums</div>`;
+  strumEl.innerHTML = html;
+}
+
+// ==================== SONG MODE ====================
+function showSongPicker() {
+  const list = document.getElementById('song-list');
+  list.innerHTML = '';
+  for (const [key, song] of Object.entries(SONGS)) {
+    const card = document.createElement('div');
+    card.className = 'song-card';
+    card.innerHTML = `
+      <div class="song-card-name">${song.name}</div>
+      <div class="song-card-artist">${song.artist}</div>
+      <div class="song-card-chords">${song.chords.join(' \u2192 ')}</div>
+    `;
+    card.addEventListener('click', () => startSong(key));
+    list.appendChild(card);
+  }
+  showScreen('song-picker');
+}
+
+function startSong(songKey) {
+  const song = SONGS[songKey];
+  state.song.currentSong = songKey;
+  state.song.currentChordIndex = 0;
+  state.song.beatCount = 0;
+  state.song.songTransitions = {};
+  state.song.songCorrect = 0;
+  state.song.songTotal = 0;
+  resetAudioState();
+
+  // Reset strumming state
+  state.song.strumIndex = 0;
+  state.song.strumsCorrect = 0;
+  state.song.strumsTotal = 0;
+  state.song.directionFallback = false;
+  if (state.song.fallbackTimer) { clearTimeout(state.song.fallbackTimer); state.song.fallbackTimer = null; }
+
+  state.isRunning = true;
+  state.sessionStart = Date.now();
+
+  document.getElementById('song-practice-name').textContent = song.name;
+  document.getElementById('song-practice-artist').textContent = song.artist;
+  document.getElementById('song-audio-feedback').style.display = state.audio.micActive ? 'block' : 'none';
+
+  updateSongProgressBar();
+  showSongChord();
+  updateSongDetectionStatus('waiting', 'Get ready...');
+
+  // Mode buttons
+  const modeBtn = document.getElementById('song-mode-btn');
+  modeBtn.textContent = state.song.songMode === 'listen' ? 'Auto-Advance' : 'Listen Mode';
+  modeBtn.classList.toggle('active', state.song.songMode === 'auto');
+
+  const loopBtn = document.getElementById('song-loop-btn');
+  loopBtn.classList.toggle('active', state.song.songLoop);
+
+  showScreen('song-practice');
+
+  // Start beat timer for auto-advance mode
+  if (state.song.songMode === 'auto') startSongBeatTimer();
+
+  document.getElementById('song-pause-btn').addEventListener('click', pausePractice);
+}
+
+function showSongChord() {
+  const song = SONGS[state.song.currentSong];
+  const chordKey = song.chords[state.song.currentChordIndex];
+
+  state.currentChord = chordKey;
+  if (state.audio.micActive) {
+    state.audio.transitionStartTime = Date.now();
+    state.audio.transitionDelay = 0;
+    state.audio.detectedChord = null;
+    state.audio.toneSampled = false;
+  }
+
+  // Reset strumming state for new chord
+  state.song.strumIndex = 0;
+  state.song.strumsCorrect = 0;
+  state.song.strumsTotal = 0;
+  state.song.directionFallback = false;
+  if (state.song.fallbackTimer) { clearTimeout(state.song.fallbackTimer); state.song.fallbackTimer = null; }
+
+  document.getElementById('song-chord-name').textContent = CHORDS[chordKey].name;
+  renderChordDiagram(chordKey, document.getElementById('song-chord-diagram'));
+  renderNotation(chordKey, document.getElementById('song-notation-display'));
+
+  // Strumming display with parsed pattern
+  renderStrummingDisplay(song.parsedStrumming, 0, song.expectedStrums);
+
+  updateSongProgressBar();
+
+  if (state.song.songMode === 'listen') {
+    updateSongDetectionStatus('waiting', `Playing: ${CHORDS[chordKey].name}`);
+  }
+}
+
+function updateSongProgressBar() {
+  const song = SONGS[state.song.currentSong];
+  const bar = document.getElementById('song-progress-bar');
+  bar.innerHTML = '';
+  song.chords.forEach((chord, i) => {
+    if (i > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'song-chord-arrow';
+      arrow.textContent = '\u2192';
+      bar.appendChild(arrow);
+    }
+    const step = document.createElement('span');
+    step.className = 'song-chord-step';
+    if (i < state.song.currentChordIndex) step.classList.add('completed');
+    if (i === state.song.currentChordIndex) step.classList.add('active');
+    step.textContent = chord;
+    bar.appendChild(step);
+  });
+}
+
+function advanceSongChord() {
+  const song = SONGS[state.song.currentSong];
+  state.song.currentChordIndex++;
+  state.song.songTotal++;
+
+  if (state.song.currentChordIndex >= song.chords.length) {
+    if (state.song.songLoop) {
+      state.song.currentChordIndex = 0;
+      showSongChord();
+      return;
+    }
+    endSongSession();
+    return;
+  }
+
+  const prev = song.chords[state.song.currentChordIndex - 1];
+  const curr = song.chords[state.song.currentChordIndex];
+  const key = `${prev}\u2192${curr}`;
+  if (!state.song.songTransitions[key]) state.song.songTransitions[key] = { count: 0, struggles: 0 };
+  state.song.songTransitions[key].count++;
+
+  showSongChord();
+}
+
+function startSongBeatTimer() {
+  if (state.song.beatIntervalId) clearInterval(state.song.beatIntervalId);
+  const bpm = { slow: 60, medium: 90, fast: 120 }[state.song.tempo] || 90;
+  const beatMs = (60000 / bpm) * SONGS[state.song.currentSong].beatsPerChord;
+
+  state.song.beatIntervalId = setInterval(() => {
+    if (!state.isRunning || state.screen !== 'song-practice') return;
+    pulseBeat();
+    advanceSongChord();
+  }, beatMs);
+}
+
+function pulseBeat() {
+  const indicator = document.getElementById('beat-indicator');
+  indicator.classList.add('pulse');
+  setTimeout(() => indicator.classList.remove('pulse'), 150);
+}
+
+function updateSongDetectionStatus(type, text) {
+  const el = document.getElementById('detection-status');
+  el.className = `detection-status ${type}`;
+  el.textContent = text;
+}
+
+// Dead function — replaced by setInterval at line ~1940
+
+function endSongSession() {
+  state.isRunning = false;
+  if (state.song.beatIntervalId) clearInterval(state.song.beatIntervalId);
+  showSummary();
 }
 
 // ==================== SUMMARY ====================
 function showSummary() {
+  const song = SONGS[state.song.currentSong];
   const duration = Math.round((Date.now() - state.sessionStart) / 1000);
   const minutes = Math.floor(duration / 60);
   const seconds = duration % 60;
 
-  const struggles = Object.entries(state.transitions)
+  document.getElementById('summary-subtitle').textContent = song
+    ? `${song.name} — ${song.artist}`
+    : 'Free Practice';
+
+  // Merge song and practice transitions
+  const allTransitions = { ...state.transitions, ...state.song.songTransitions };
+
+  // Stats
+  const accuracy = state.audio.totalDetected > 0
+    ? Math.round((state.audio.correctCount / state.audio.totalDetected) * 100)
+    : null;
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${state.totalTransitions || state.song.songTotal}</div><div class="stat-label">Transitions</div></div>
+    <div class="stat-card"><div class="stat-value">${minutes}:${seconds.toString().padStart(2,'0')}</div><div class="stat-label">Duration</div></div>
+    <div class="stat-card"><div class="stat-value">${accuracy !== null ? accuracy + '%' : 'N/A'}</div><div class="stat-label">Accuracy</div></div>
+    <div class="stat-card"><div class="stat-value">${state.audio.totalDetected > 0 ? Math.round(state.audio.buzzyCount / Math.max(1, state.audio.buzzyCount + state.audio.cleanCount) * 100) + '%' : 'N/A'}</div><div class="stat-label">Buzzing</div></div>
+  `;
+
+  // Accuracy per chord
+  const chordAccuracy = {};
+  for (const s of state.audio.samples) {
+    if (!chordAccuracy[s.to]) chordAccuracy[s.to] = { correct: 0, total: 0 };
+    chordAccuracy[s.to].total++;
+    if (s.correct) chordAccuracy[s.to].correct++;
+  }
+
+  let accHtml = '';
+  for (const [chord, data] of Object.entries(chordAccuracy)) {
+    const pct = Math.round((data.correct / data.total) * 100);
+    const cls = pct >= 80 ? 'good' : pct >= 50 ? 'ok' : 'bad';
+    accHtml += `
+      <div class="accuracy-bar-row">
+        <span class="accuracy-name">${CHORDS[chord]?.name || chord}</span>
+        <div class="accuracy-bar"><div class="accuracy-bar-fill ${cls}" style="width:${pct}%"></div></div>
+        <span class="accuracy-pct">${pct}%</span>
+      </div>`;
+  }
+  document.getElementById('accuracy-section').innerHTML = accHtml
+    ? `<span class="section-label">Chord Accuracy</span>${accHtml}` : '';
+
+  // Tone quality
+  const totalStrums = Math.max(1, state.audio.cleanCount + state.audio.buzzyCount + state.audio.mutedCount);
+  document.getElementById('tone-section').innerHTML = `
+    <span class="section-label">Tone Quality</span>
+    <div class="tone-row"><span class="tone-label">Clean</span><span class="tone-value">${state.audio.cleanCount}/${totalStrums}</span></div>
+    <div class="tone-row"><span class="tone-label">Buzzing</span><span class="tone-value">${state.audio.buzzyCount}/${totalStrums}${state.audio.buzzyCount > totalStrums * 0.2 ? ' \u2014 Press closer to the fret wire' : ''}</span></div>
+    <div class="tone-row"><span class="tone-label">Muted</span><span class="tone-value">${state.audio.mutedCount}/${totalStrums}${state.audio.mutedCount > totalStrums * 0.15 ? ' \u2014 Arch your fingers more' : ''}</span></div>
+  `;
+
+  // Struggles
+  const struggles = Object.entries(allTransitions)
     .filter(([, v]) => v.struggles > 0)
     .sort((a, b) => (b[1].struggles / b[1].count) - (a[1].struggles / a[1].count))
     .slice(0, 5);
 
-  document.getElementById('stats-grid').innerHTML = `
-    <div class="stat-card">
-      <div class="stat-value">${state.totalTransitions}</div>
-      <div class="stat-label">Transitions</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</div>
-      <div class="stat-label">Duration</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${state.selectedChords.length}</div>
-      <div class="stat-label">Chords</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${state.interval}s</div>
-      <div class="stat-label">Interval</div>
-    </div>
-  `;
-
-  let strugglesHtml = '';
+  let struggleHtml = '';
   if (struggles.length > 0) {
-    strugglesHtml = '<span class="section-label">Focus Areas</span>';
+    struggleHtml = '<span class="section-label">Focus Areas</span>';
     struggles.forEach(([pair, data]) => {
       const rate = Math.round((data.struggles / data.count) * 100);
-      strugglesHtml += `
-        <div class="struggle-item">
-          <span class="struggle-pair">${pair}</span>
-          <span class="struggle-rate">${rate}% struggled</span>
-        </div>
-      `;
+      struggleHtml += `<div class="struggle-item"><span class="struggle-pair">${pair}</span><span class="struggle-rate">${rate}% struggled</span></div>`;
     });
   }
-  document.getElementById('struggles-list').innerHTML = strugglesHtml;
+  document.getElementById('struggles-list').innerHTML = struggleHtml;
+
+  // Suggestions
+  const { suggestions } = generateCritiques();
+  let sugHtml = '';
+  if (suggestions.length > 0) {
+    sugHtml = '<span class="section-label">Suggestions</span>';
+    suggestions.forEach(s => { sugHtml += `<div class="suggestion-item">${escHtml(s)}</div>`; });
+  }
+  document.getElementById('suggestions-list').innerHTML = sugHtml;
 
   showScreen('summary');
+}
+
+// ==================== AUDIO ====================
+function playClick() {
+  try {
+    if (!state.outputCtx) state.outputCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = state.outputCtx.createOscillator();
+    const gain = state.outputCtx.createGain();
+    osc.connect(gain); gain.connect(state.outputCtx.destination);
+    osc.frequency.value = 800; gain.gain.value = 0.1;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, state.outputCtx.currentTime + 0.05);
+    osc.stop(state.outputCtx.currentTime + 0.05);
+  } catch (e) {}
 }
 
 // ==================== KEYBOARD SHORTCUTS ====================
 function handleKeyboard(e) {
   if (state.screen === 'practice' && state.isRunning) {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      pausePractice();
-    } else if (e.key === 'g' || e.key === 'G') {
-      recordFeedback(true);
-    } else if (e.key === 's' || e.key === 'S') {
-      recordFeedback(false);
-    }
+    if (e.code === 'Space') { e.preventDefault(); pausePractice(); }
+    else if (e.key === 'g' || e.key === 'G') recordFeedback(true);
+    else if (e.key === 's' || e.key === 'S') recordFeedback(false);
   } else if (state.screen === 'practice' && !state.isRunning) {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      resumePractice();
-    }
-  } else if (state.screen === 'setup' && e.code === 'Escape') {
-    if (state.selectedChords.length >= 2) startPractice();
+    if (e.code === 'Space') { e.preventDefault(); resumePractice(); }
   } else if (state.screen === 'summary' && (e.code === 'Enter' || e.code === 'Space')) {
-    e.preventDefault();
-    resetSetup();
-    showScreen('setup');
+    e.preventDefault(); resetSetup(); showScreen('setup');
   }
 }
 
 // ==================== INIT ====================
+buildChordTemplates();
 initSetup();
+
+// Song control listeners
+document.getElementById('song-loop-btn').addEventListener('click', function() {
+  state.song.songLoop = !state.song.songLoop;
+  this.classList.toggle('active', state.song.songLoop);
+});
+
+document.getElementById('song-mode-btn').addEventListener('click', function() {
+  if (state.song.songMode === 'listen') {
+    state.song.songMode = 'auto';
+    this.textContent = 'Listen Mode';
+    this.classList.add('active');
+    if (state.song.fallbackTimer) { clearTimeout(state.song.fallbackTimer); state.song.fallbackTimer = null; }
+    if (state.song.currentSong) startSongBeatTimer();
+  } else {
+    state.song.songMode = 'listen';
+    this.textContent = 'Auto-Advance';
+    this.classList.remove('active');
+    if (state.song.beatIntervalId) clearInterval(state.song.beatIntervalId);
+    state.song.strumIndex = 0;
+    state.song.strumsCorrect = 0;
+    state.song.strumsTotal = 0;
+    state.song.directionFallback = false;
+    if (state.song.fallbackTimer) { clearTimeout(state.song.fallbackTimer); state.song.fallbackTimer = null; }
+    const song = SONGS[state.song.currentSong];
+    if (song) renderStrummingDisplay(song.parsedStrumming, 0, song.expectedStrums);
+  }
+});
+
+// Unified detection loop — handles practice listen mode + song chord detection
+let songChordLocked = false;
+setInterval(() => {
+  if (!state.audio.micActive) return;
+
+  // Practice listen mode
+  if (state.screen === 'practice' && state.practiceMode === 'listen' && state.isRunning) {
+    if (state.audio.practiceChordLocked) return;
+    if (state.audio.detectedChord === state.currentChord && state.audio.detectedConfidence > 0.45) {
+      state.audio.practiceChordLocked = true;
+      updatePracticeDetectionBadge('correct', `${CHORDS[state.currentChord].name} \u2714`);
+      setTimeout(() => advancePracticeChord(), 1000);
+    } else if (state.audio.detectedChord && state.audio.isPlaying && state.audio.detectedConfidence > 0.4) {
+      updatePracticeDetectionBadge('wrong', `${CHORDS[state.audio.detectedChord]?.name || '?'} \u2718 \u2014 expected ${CHORDS[state.currentChord]?.name}`);
+    }
+    showRealtimeCritique();
+  }
+
+  // Song mode — chord verification when strum pattern completes or auto-advance
+  if (state.screen === 'song-practice' && state.song.songMode === 'listen') return;
+
+  if (state.screen === 'song-practice' && state.song.songMode === 'auto') return;
+}, 250);
 </script>
 </body>
 </html>
