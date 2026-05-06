@@ -1,0 +1,1214 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FAF8F5;
+  --surface: #FFFFFF;
+  --text: #1A1A1A;
+  --muted: #6B6560;
+  --accent: #C8823B;
+  --accent-light: #F5E6D3;
+  --success: #4A7C59;
+  --danger: #C0392B;
+  --string: #4A4039;
+  --fret: #9A9490;
+  --dot: #C8823B;
+  --dot-stroke: #FFFFFF;
+  --radius: 12px;
+  --shadow: 0 2px 16px rgba(26, 26, 26, 0.08);
+  --shadow-lg: 0 8px 32px rgba(26, 26, 26, 0.12);
+}
+
+body {
+  font-family: 'Instrument Sans', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 32px 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 640px;
+  padding: 24px;
+  animation: fadeIn 300ms ease-out;
+}
+
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Setup Screen */
+.setup-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.setup-subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 12px;
+  align-self: flex-start;
+}
+
+.chord-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.chord-chip {
+  padding: 8px 14px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 150ms ease;
+  user-select: none;
+}
+
+.chord-chip:hover { border-color: var(--accent); }
+.chord-chip.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+.setting-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.setting-option {
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 150ms ease;
+}
+
+.setting-option:hover { border-color: var(--accent); }
+.setting-option.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+.mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 14px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  transition: all 150ms ease;
+}
+
+.mode-btn:hover { border-color: var(--accent); }
+.mode-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+.mode-btn-name { font-size: 14px; font-weight: 600; display: block; margin-bottom: 4px; }
+.mode-btn-desc { font-size: 11px; opacity: 0.8; }
+
+.mic-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.mic-toggle:hover { border-color: var(--accent); }
+.mic-toggle.active { border-color: var(--success); background: #f0f7f2; }
+
+.mic-icon { font-size: 20px; }
+.mic-label { font-size: 13px; font-weight: 500; }
+.mic-desc { font-size: 11px; color: var(--muted); }
+.mic-status { font-size: 11px; color: var(--success); font-weight: 500; }
+
+.start-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-top: 8px;
+}
+
+.start-btn:hover { transform: scale(1.02); box-shadow: var(--shadow); }
+.start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* Practice Screen */
+.practice-container {
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chord-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(48px, 12vw, 80px);
+  margin-bottom: 16px;
+  transition: opacity 200ms ease;
+}
+
+.chord-diagram-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: opacity 200ms ease;
+}
+
+.chord-diagram-container svg { display: block; }
+
+/* Notation Display */
+.notation-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.tab-notation {
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 8px;
+  white-space: pre;
+}
+
+.numeric-notation {
+  font-family: 'Geist Mono', monospace;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.staff-notation svg { display: block; margin: 0 auto; }
+
+/* Audio Feedback */
+.audio-feedback {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 16px;
+}
+
+.detection-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.detected-chord {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detected-chord .match { color: var(--success); font-weight: 600; }
+.detected-chord .miss { color: var(--danger); font-weight: 600; }
+.detected-chord .none { color: var(--muted); }
+
+.volume-meter {
+  height: 6px;
+  background: #E5E0DA;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.volume-meter-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 50ms ease;
+}
+
+.transition-timer {
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* Timer Ring */
+.timer-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+}
+
+.timer-ring { transform: rotate(-90deg); width: 100%; height: 100%; }
+.timer-ring-bg { fill: none; stroke: #E5E0DA; stroke-width: 4; }
+.timer-ring-progress { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-text {
+  position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-family: 'Geist Mono', monospace; font-size: 20px; font-weight: 500;
+}
+
+.progressive-feedback { display: flex; gap: 12px; margin-bottom: 16px; width: 100%; max-width: 320px; }
+.feedback-btn {
+  flex: 1; padding: 12px; border: 1.5px solid #E5E0DA; border-radius: 10px;
+  background: var(--surface); cursor: pointer; font-size: 14px; font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif; transition: all 150ms ease;
+}
+.feedback-btn:hover { transform: scale(1.02); }
+.feedback-btn.got-it:hover, .feedback-btn.got-it:active { background: var(--success); color: white; border-color: var(--success); }
+.feedback-btn.struggled:hover, .feedback-btn.struggled:active { background: var(--danger); color: white; border-color: var(--danger); }
+
+.pause-btn {
+  padding: 10px 20px; border: 1.5px solid #E5E0DA; border-radius: 8px;
+  background: var(--surface); cursor: pointer; font-size: 13px; font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif; color: var(--muted); transition: all 150ms ease;
+}
+.pause-btn:hover { border-color: var(--accent); color: var(--text); }
+
+/* Pause Overlay */
+.pause-overlay {
+  position: fixed; inset: 0; background: rgba(250, 248, 245, 0.95);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 100; animation: fadeIn 200ms ease-out;
+}
+.pause-overlay.active { display: flex; }
+.pause-title { font-family: 'Instrument Serif', serif; font-size: 36px; margin-bottom: 24px; }
+.pause-btns { display: flex; gap: 12px; }
+.resume-btn {
+  padding: 14px 32px; background: var(--accent); color: white; border: none;
+  border-radius: 10px; font-size: 15px; font-weight: 600; font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer; transition: all 150ms ease;
+}
+.resume-btn:hover { transform: scale(1.02); }
+.end-btn {
+  padding: 14px 32px; border: 1.5px solid #E5E0DA; border-radius: 10px;
+  background: var(--surface); font-size: 15px; font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif; cursor: pointer; color: var(--muted); transition: all 150ms ease;
+}
+.end-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+/* Song Picker Screen */
+.song-picker-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.song-picker-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+.song-card {
+  width: 100%;
+  padding: 16px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 150ms ease;
+}
+
+.song-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+
+.song-card-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.song-card-artist { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.song-card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.song-card-difficulty {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.song-card-difficulty.beginner { color: #2d6a4f; background: #d8f3dc; }
+.song-card-difficulty.intermediate { color: #b45309; background: #fef3c7; }
+.song-card-difficulty.advanced { color: #b91c1c; background: #fee2e2; }
+.song-card-chords {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.song-card-back {
+  margin-top: 8px;
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+}
+.song-card-back:hover { color: var(--text); }
+
+/* Song Practice Screen */
+.song-header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.song-name { font-family: 'Instrument Serif', serif; font-size: 22px; margin-bottom: 2px; }
+.song-artist { font-size: 13px; color: var(--muted); }
+
+.detection-status {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.detection-status.waiting { background: var(--accent-light); color: var(--accent); }
+.detection-status.correct { background: #e8f5ec; color: var(--success); }
+.detection-status.wrong { background: #fde8e6; color: var(--danger); }
+
+.song-progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.song-chord-step {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #E5E0DA;
+  color: var(--muted);
+  transition: all 150ms ease;
+}
+.song-chord-step.active { background: var(--accent); color: white; }
+.song-chord-step.completed { background: var(--success); color: white; }
+.song-chord-arrow { color: var(--muted); font-size: 12px; }
+
+.song-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+.song-control-btn {
+  padding: 8px 16px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted);
+  transition: all 150ms ease;
+}
+.song-control-btn:hover { border-color: var(--accent); color: var(--text); }
+.song-control-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+.beat-indicator {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 auto 16px;
+  opacity: 0.3;
+  transition: opacity 100ms ease;
+}
+.beat-indicator.pulse { opacity: 1; transform: scale(1.3); }
+
+.strumming-display {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+.strumming-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.strumming-pattern { font-family: 'Geist Mono', monospace; font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.strumming-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.strum-group { display: inline-flex; gap: 1px; }
+.strum-arrow { display: inline-block; padding: 0 2px; transition: all 150ms ease; }
+.strum-arrow.completed { color: var(--success); }
+.strum-arrow.active { color: var(--accent); font-weight: 700; transform: scale(1.15); }
+.strum-arrow.wrong { color: var(--danger); animation: strumShake 300ms ease; }
+@keyframes strumShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.strum-counter { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* Practice Mode Toggle */
+.practice-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+.practice-mode-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid #E5E0DA;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted);
+  transition: all 150ms ease;
+  text-align: center;
+}
+.practice-mode-btn:hover { border-color: var(--accent); color: var(--text); }
+.practice-mode-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+/* Practice Detection Badge */
+.practice-detection-badge {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  display: none;
+}
+.practice-detection-badge.visible { display: block; }
+.practice-detection-badge.waiting { background: var(--accent-light); color: var(--accent); }
+.practice-detection-badge.correct { background: #e8f5ec; color: var(--success); }
+.practice-detection-badge.wrong { background: #fde8e6; color: var(--danger); }
+
+/* Real-time Critique Hint */
+.critique-hint {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 320px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  border-left: 3px solid var(--accent);
+  display: none;
+  animation: fadeIn 200ms ease-out;
+}
+.critique-hint.visible { display: block; }
+
+/* Audio Learning Badge */
+.audio-learning-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: #e8f5ec;
+  color: var(--success);
+  margin-bottom: 8px;
+  display: none;
+}
+.audio-learning-badge.visible { display: inline-block; }
+.audio-learning-badge::before { content: '🎧 '; }
+
+/* Summary Screen */
+.summary-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 4px; }
+.summary-subtitle { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.stat-card { background: var(--surface); border-radius: 10px; padding: 16px; text-align: center; box-shadow: var(--shadow); }
+.stat-value { font-family: 'Geist Mono', monospace; font-size: 28px; font-weight: 600; color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.accuracy-section { width: 100%; margin-bottom: 16px; }
+.accuracy-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.accuracy-name { font-size: 13px; font-weight: 500; min-width: 70px; }
+.accuracy-bar { flex: 1; height: 8px; background: #E5E0DA; border-radius: 4px; overflow: hidden; }
+.accuracy-bar-fill { height: 100%; border-radius: 4px; transition: width 300ms ease; }
+.accuracy-bar-fill.good { background: var(--success); }
+.accuracy-bar-fill.ok { background: var(--accent); }
+.accuracy-bar-fill.bad { background: var(--danger); }
+.accuracy-pct { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--muted); min-width: 35px; text-align: right; }
+
+.struggles-list { width: 100%; margin-bottom: 16px; }
+.section-label { margin-bottom: 10px; }
+
+.struggle-item { display: flex; justify-content: space-between; padding: 10px 12px; background: var(--surface); border-radius: 8px; margin-bottom: 6px; font-size: 14px; }
+.struggle-pair { font-weight: 500; }
+.struggle-rate { color: var(--danger); font-family: 'Geist Mono', monospace; }
+
+.suggestions-list { width: 100%; margin-bottom: 20px; }
+.suggestion-item {
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-left: 3px solid var(--accent);
+}
+
+.tone-section { width: 100%; margin-bottom: 16px; }
+.tone-row { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--surface); border-radius: 8px; margin-bottom: 4px; font-size: 13px; }
+.tone-label { font-weight: 500; }
+.tone-value { font-family: 'Geist Mono', monospace; }
+
+.back-btn {
+  padding: 14px 32px; background: var(--accent); color: white; border: none;
+  border-radius: 10px; font-size: 15px; font-weight: 600; font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer; transition: all 150ms ease;
+}
+.back-btn:hover { transform: scale(1.02); }
+
+/* Mic permission overlay */
+.mic-overlay {
+  position: fixed; inset: 0; background: rgba(250, 248, 245, 0.97);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 200; animation: fadeIn 200ms ease-out;
+  padding: 24px;
+}
+.mic-overlay.active { display: flex; }
+.mic-overlay-title { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 8px; }
+.mic-overlay-desc { color: var(--muted); font-size: 14px; text-align: center; max-width: 320px; margin-bottom: 24px; line-height: 1.5; }
+.mic-overlay-tip {
+  background: var(--accent-light);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 20px;
+  text-align: center;
+}
+.mic-allow-btn {
+  padding: 14px 32px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-bottom: 12px;
+}
+.mic-allow-btn:hover { transform: scale(1.02); }
+.mic-skip-btn {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: 'Instrument Sans', sans-serif;
+  cursor: pointer;
+}
+.mic-skip-btn:hover { color: var(--text); }
+.mic-error { color: var(--danger); font-size: 13px; margin-top: 8px; text-align: center; display: none; }
+
+/* Mobile */
+@media (max-width: 480px) {
+  .screen { padding: 16px; }
+  .setup-title { font-size: 24px; }
+  .chord-diagram-container { padding: 16px; }
+  .notation-container { padding: 12px; }
+  .tab-notation { font-size: 11px; }
+}
+
+/* Navigation Hub */
+.nav-hub { width: 100%; margin-top: 16px; }
+.nav-hub-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; align-self: flex-start; }
+.nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.nav-card {
+  padding: 14px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; text-align: center; transition: all 150ms ease;
+}
+.nav-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.nav-card-icon { font-size: 20px; margin-bottom: 4px; }
+.nav-card-name { font-size: 13px; font-weight: 500; }
+.progress-badge {
+  font-size: 11px; color: var(--accent); background: var(--accent-light); padding: 2px 8px;
+  border-radius: 4px; margin-top: 6px; display: inline-block;
+}
+
+/* Tuner Screen */
+.tuner-container { text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.tuner-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 16px; }
+.tuner-gauge { width: 280px; height: 140px; margin-bottom: 16px; }
+.tuner-note-display { font-size: 64px; font-weight: 600; font-family: 'Instrument Serif', serif; margin-bottom: 4px; transition: color 200ms ease; }
+.tuner-note-display.in-tune { color: var(--success); }
+.tuner-note-display.sharp { color: var(--danger); }
+.tuner-note-display.flat { color: var(--danger); }
+.tuner-cents { font-family: 'Geist Mono', monospace; font-size: 16px; color: var(--muted); margin-bottom: 20px; }
+.tuner-strings { display: flex; gap: 8px; margin-bottom: 24px; }
+.tuner-string-btn {
+  width: 56px; height: 56px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; font-size: 18px; font-weight: 600; font-family: 'Geist Mono', monospace; color: var(--text);
+  transition: all 150ms ease; display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.tuner-string-btn:hover { border-color: var(--accent); }
+.tuner-string-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+.tuner-string-btn .string-label { font-size: 9px; font-weight: 400; opacity: 0.7; }
+.tuner-play-btn {
+  padding: 8px 16px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 12px; font-weight: 500; font-family: 'Instrument Sans', sans-serif; color: var(--muted);
+  transition: all 150ms ease; margin-bottom: 12px;
+}
+.tuner-play-btn:hover { border-color: var(--accent); color: var(--text); }
+.tuner-auto-btn {
+  padding: 8px 16px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 12px; font-weight: 500; font-family: 'Instrument Sans', sans-serif; color: var(--muted);
+  transition: all 150ms ease; margin-bottom: 12px;
+}
+.tuner-auto-btn:hover { border-color: var(--accent); color: var(--text); }
+.tuner-auto-btn.active { border-color: var(--success); color: var(--success); background: #e8f5ec; }
+
+/* Strumming Drills */
+.strum-drill-container { text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.strum-drill-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.strum-drill-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+.strum-pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; width: 100%; }
+.strum-pattern-btn {
+  padding: 12px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; text-align: center; transition: all 150ms ease;
+}
+.strum-pattern-btn:hover { border-color: var(--accent); }
+.strum-pattern-btn.selected { background: var(--accent-light); border-color: var(--accent); }
+.strum-pattern-btn .pattern-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.strum-pattern-btn .pattern-preview { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--accent); }
+.strum-drill-display {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 16px; width: 100%; max-width: 320px;
+}
+.strum-drill-score { font-family: 'Geist Mono', monospace; font-size: 24px; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
+.strum-drill-metronome { display: flex; gap: 8px; margin-bottom: 16px; }
+
+/* Custom Songs */
+.custom-song-container { width: 100%; }
+.custom-song-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 16px; text-align: center; }
+.song-form { width: 100%; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; display: block; }
+.form-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #E5E0DA; border-radius: 8px;
+  font-size: 14px; font-family: 'Instrument Sans', sans-serif; background: var(--surface);
+  transition: border-color 150ms ease;
+}
+.form-input:focus { outline: none; border-color: var(--accent); }
+.form-input::placeholder { color: #C0B8B0; }
+.custom-song-list { margin-top: 16px; }
+.custom-song-item {
+  display: flex; justify-content: space-between; align-items: center; padding: 10px 12px;
+  background: var(--surface); border-radius: 8px; margin-bottom: 6px; border: 1.5px solid #E5E0DA;
+}
+.delete-song-btn {
+  padding: 4px 10px; border: none; background: none; color: var(--danger); cursor: pointer;
+  font-size: 12px; font-weight: 500; font-family: 'Instrument Sans', sans-serif;
+}
+
+/* Scales */
+.scale-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.scale-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 16px; }
+.scale-pickers { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+.scale-type-btn, .scale-key-btn {
+  padding: 8px 14px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 13px; font-weight: 500; transition: all 150ms ease;
+}
+.scale-type-btn:hover, .scale-key-btn:hover { border-color: var(--accent); }
+.scale-type-btn.selected, .scale-key-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+.fretboard-container {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 16px; width: 100%; max-width: 500px; overflow-x: auto;
+}
+.fretboard-container svg { display: block; margin: 0 auto; }
+.scale-info { font-size: 13px; color: var(--muted); margin-bottom: 16px; text-align: center; }
+.scale-practice-btn {
+  padding: 12px 24px; background: var(--accent); color: white; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 600; font-family: 'Instrument Sans', sans-serif; cursor: pointer; transition: all 150ms ease;
+}
+.scale-practice-btn:hover { transform: scale(1.02); }
+
+/* Progressions */
+.progression-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.progression-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.progression-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.progression-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 16px; width: 100%; }
+.progression-card {
+  padding: 14px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; transition: all 150ms ease;
+}
+.progression-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.progression-card-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.progression-card-chords { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--accent); margin-bottom: 4px; }
+.progression-card-desc { font-size: 12px; color: var(--muted); }
+.progression-key-picker { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; justify-content: center; }
+
+/* Ear Training */
+.ear-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.ear-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.ear-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.ear-difficulty-picker { display: flex; gap: 8px; margin-bottom: 20px; }
+.ear-diff-btn {
+  padding: 10px 18px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 13px; font-weight: 500; transition: all 150ms ease;
+}
+.ear-diff-btn:hover { border-color: var(--accent); }
+.ear-diff-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+.ear-play-btn {
+  width: 80px; height: 80px; border-radius: 50%; background: var(--accent); color: white; border: none;
+  cursor: pointer; font-size: 28px; transition: all 150ms ease; margin-bottom: 24px; display: flex; align-items: center; justify-content: center;
+}
+.ear-play-btn:hover { transform: scale(1.05); box-shadow: var(--shadow-lg); }
+.ear-choices { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+.ear-choice-btn {
+  padding: 12px 20px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; font-size: 14px; font-weight: 500; transition: all 150ms ease;
+}
+.ear-choice-btn:hover { border-color: var(--accent); }
+.ear-choice-btn.correct { background: var(--success); color: white; border-color: var(--success); }
+.ear-choice-btn.wrong { background: var(--danger); color: white; border-color: var(--danger); }
+.ear-score-display { font-family: 'Geist Mono', monospace; font-size: 20px; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
+.ear-streak { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+/* ==================== NEW FEATURE STYLES ==================== */
+
+/* Chord Transition Trainer */
+.transition-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.transition-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.transition-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.transition-pair-display {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 20px; width: 100%; justify-content: center; flex-wrap: wrap;
+}
+.transition-chord-card {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; text-align: center; min-width: 140px;
+}
+.transition-chord-card .chord-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+.transition-chord-card .chord-name-sm { font-family: 'Instrument Serif', serif; font-size: 20px; margin-bottom: 8px; }
+.transition-arrow { font-size: 24px; color: var(--accent); font-weight: 600; }
+.transition-timer-display {
+  font-family: 'Geist Mono', monospace; font-size: 48px; font-weight: 600; color: var(--accent);
+  margin-bottom: 8px;
+}
+.transition-countdown { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+.transition-go { font-size: 32px; font-weight: 700; color: var(--success); animation: fadeIn 200ms ease; }
+.transition-stats { width: 100%; max-width: 320px; margin-top: 16px; }
+.transition-speed-row { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--surface); border-radius: 8px; margin-bottom: 4px; font-size: 13px; }
+.transition-speed-label { font-weight: 500; }
+.transition-speed-value { font-family: 'Geist Mono', monospace; }
+.transition-pair-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; justify-content: center; }
+.transition-pair-btn {
+  padding: 8px 14px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 13px; font-weight: 500; transition: all 150ms ease;
+}
+.transition-pair-btn:hover { border-color: var(--accent); }
+.transition-pair-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* BPM Progressive Training */
+.bpm-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.bpm-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.bpm-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.bpm-display {
+  font-family: 'Geist Mono', monospace; font-size: 64px; font-weight: 600; color: var(--accent);
+  margin-bottom: 4px;
+}
+.bpm-label { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.bpm-ladder-info {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; margin-bottom: 16px; width: 100%; max-width: 320px; text-align: center;
+}
+.bpm-ladder-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+.bpm-ladder-label { color: var(--muted); }
+.bpm-ladder-value { font-weight: 600; font-family: 'Geist Mono', monospace; }
+.bpm-ladder-bar { width: 100%; height: 8px; background: #E5E0DA; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+.bpm-ladder-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 300ms ease; }
+.bpm-stop-btn {
+  padding: 10px 20px; border: 1.5px solid var(--danger); border-radius: 8px; background: var(--surface);
+  color: var(--danger); cursor: pointer; font-size: 13px; font-weight: 500; font-family: 'Instrument Sans', sans-serif;
+  transition: all 150ms ease;
+}
+.bpm-stop-btn:hover { background: var(--danger); color: white; }
+.bpm-best { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+/* Achievement & Badge System */
+.achievements-container { width: 100%; }
+.achievements-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; text-align: center; }
+.achievements-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.achievements-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.achievement-card {
+  padding: 14px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  text-align: center; transition: all 150ms ease; position: relative; overflow: hidden;
+}
+.achievement-card.unlocked { border-color: var(--accent); }
+.achievement-card.locked { opacity: 0.5; }
+.achievement-icon { font-size: 28px; margin-bottom: 6px; display: block; }
+.achievement-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.achievement-desc { font-size: 10px; color: var(--muted); line-height: 1.3; }
+.achievement-card.unlocked::after {
+  content: '✓'; position: absolute; top: 4px; right: 6px; font-size: 10px; color: var(--success);
+}
+.achievement-toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--success); color: white;
+  padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500;
+  z-index: 300; animation: fadeIn 300ms ease-out, fadeOut 300ms ease-in 2.7s forwards;
+}
+@keyframes fadeOut { to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+
+/* Practice History & Streaks */
+.history-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.history-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.history-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.streak-display {
+  display: flex; gap: 16px; margin-bottom: 20px; width: 100%; max-width: 320px; justify-content: center;
+}
+.streak-card {
+  flex: 1; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; text-align: center;
+}
+.streak-value { font-family: 'Geist Mono', monospace; font-size: 32px; font-weight: 600; color: var(--accent); }
+.streak-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.heatmap-container {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; margin-bottom: 16px; width: 100%; max-width: 500px; overflow-x: auto;
+}
+.heatmap-grid { display: grid; grid-template-columns: repeat(52, 1fr); gap: 2px; }
+.heatmap-cell {
+  width: 8px; height: 8px; border-radius: 2px; background: #E5E0DA;
+}
+.heatmap-cell.l1 { background: #c6e48b; }
+.heatmap-cell.l2 { background: #7bc47f; }
+.heatmap-cell.l3 { background: #239a3b; }
+.heatmap-cell.l4 { background: #196127; }
+.heatmap-month-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 4px; width: 100%; }
+.history-stats { width: 100%; max-width: 320px; }
+.history-stat-row { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--surface); border-radius: 8px; margin-bottom: 4px; font-size: 13px; }
+.history-stat-label { font-weight: 500; }
+.history-stat-value { font-family: 'Geist Mono', monospace; }
+
+/* Chord Library Browser */
+.library-container { width: 100%; }
+.library-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; text-align: center; }
+.library-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 16px; text-align: center; }
+.library-search {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #E5E0DA; border-radius: 8px;
+  font-size: 14px; font-family: 'Instrument Sans', sans-serif; background: var(--surface);
+  margin-bottom: 12px; transition: border-color 150ms ease;
+}
+.library-search:focus { outline: none; border-color: var(--accent); }
+.library-filter-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; justify-content: center; }
+.library-filter-btn {
+  padding: 6px 12px; border: 1.5px solid #E5E0DA; border-radius: 6px; background: var(--surface);
+  cursor: pointer; font-size: 11px; font-weight: 500; transition: all 150ms ease;
+}
+.library-filter-btn:hover { border-color: var(--accent); }
+.library-filter-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+.library-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.library-card {
+  padding: 12px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; text-align: center; transition: all 150ms ease;
+}
+.library-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.library-card.selected { background: var(--accent-light); border-color: var(--accent); }
+.library-card-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.library-card-diagram { margin-bottom: 4px; }
+.library-card-diagram svg { display: block; margin: 0 auto; }
+.library-card-add {
+  font-size: 11px; color: var(--accent); margin-top: 4px; font-weight: 500;
+}
+.library-detail {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-top: 12px; width: 100%; text-align: center;
+}
+.library-detail-name { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 12px; }
+.library-play-btn {
+  padding: 10px 20px; border: 1.5px solid var(--accent); border-radius: 8px; background: var(--surface);
+  color: var(--accent); cursor: pointer; font-size: 13px; font-weight: 500; font-family: 'Instrument Sans', sans-serif;
+  transition: all 150ms ease; margin-top: 12px;
+}
+.library-play-btn:hover { background: var(--accent); color: white; }
+
+/* Guided Warm-up Routines */
+.warmup-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.warmup-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.warmup-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.warmup-routines { width: 100%; margin-bottom: 16px; }
+.warmup-card {
+  padding: 14px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; margin-bottom: 8px; transition: all 150ms ease; text-align: center;
+}
+.warmup-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.warmup-card.selected { background: var(--accent-light); border-color: var(--accent); }
+.warmup-card-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.warmup-card-desc { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.warmup-card-duration { font-size: 11px; color: var(--accent); font-weight: 500; }
+.warmup-active {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 16px; width: 100%; max-width: 320px; text-align: center;
+}
+.warmup-step-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.warmup-step-desc { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.warmup-timer {
+  font-family: 'Geist Mono', monospace; font-size: 48px; font-weight: 600; color: var(--accent);
+  margin-bottom: 4px;
+}
+.warmup-timer-label { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.warmup-progress-text { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.warmup-btn {
+  padding: 10px 20px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 13px; font-weight: 500; font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted); transition: all 150ms ease;
+}
+.warmup-btn:hover { border-color: var(--accent); color: var(--text); }
+.warmup-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* Fretboard Memorization Trainer */
+.fretboard-trainer-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.fretboard-trainer-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.fretboard-trainer-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.fretboard-question {
+  font-size: 20px; font-weight: 600; margin-bottom: 4px; text-align: center;
+}
+.fretboard-question-note { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--accent); }
+.fretboard-target {
+  font-family: 'Geist Mono', monospace; font-size: 14px; color: var(--muted); margin-bottom: 16px;
+}
+.fretboard-interactive {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; margin-bottom: 16px; width: 100%; max-width: 500px; overflow-x: auto;
+}
+.fretboard-interactive svg { display: block; margin: 0 auto; cursor: pointer; }
+.fretboard-score-display { font-family: 'Geist Mono', monospace; font-size: 20px; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
+.fretboard-streak { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.fretboard-config { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+.fretboard-config-btn {
+  padding: 6px 12px; border: 1.5px solid #E5E0DA; border-radius: 6px; background: var(--surface);
+  cursor: pointer; font-size: 11px; font-weight: 500; transition: all 150ms ease;
+}
+.fretboard-config-btn:hover { border-color: var(--accent); }
+.fretboard-config-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+.fretboard-result {
+  font-size: 16px; font-weight: 600; margin-bottom: 8px; min-height: 24px;
+}
+.fretboard-result.correct { color: var(--success); }
+.fretboard-result.wrong { color: var(--danger); }
+
+/* Chord Theory Visualizer */
+.theory-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.theory-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 16px; }
+.theory-panel {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 16px; width: 100%; max-width: 400px;
+}
+.theory-section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+.theory-interval-grid { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.theory-interval {
+  padding: 8px 12px; border-radius: 8px; text-align: center; min-width: 60px;
+}
+.theory-interval-label { font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 2px; }
+.theory-interval-note { font-size: 14px; font-weight: 600; }
+.theory-interval-color { width: 100%; height: 4px; border-radius: 2px; margin-top: 4px; }
+.theory-notes-list { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.theory-note-tag {
+  padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500;
+  background: var(--accent-light); color: var(--accent);
+}
+.theory-explanation { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.theory-fretboard-overlay { margin-top: 12px; }
+
+/* Session Recording & Playback */
+.recording-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.recording-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.recording-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.recording-status {
+  padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  margin-bottom: 16px;
+}
+.recording-status.idle { background: #E5E0DA; color: var(--muted); }
+.recording-status.recording { background: #fde8e6; color: var(--danger); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+.recording-status.ready { background: #e8f5ec; color: var(--success); }
+.record-btn {
+  width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--danger); background: var(--surface);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; transition: all 150ms ease; margin-bottom: 16px;
+}
+.record-btn:hover { transform: scale(1.05); }
+.record-btn.recording { background: var(--danger); color: white; }
+.recordings-list { width: 100%; max-width: 320px; }
+.recording-item {
+  display: flex; justify-content: space-between; align-items: center; padding: 10px 12px;
+  background: var(--surface); border-radius: 8px; margin-bottom: 6px; font-size: 13px;
+}
+.recording-item-name { font-weight: 500; }
+.recording-item-date { font-size: 11px; color: var(--muted); }
+.recording-play-btn {
+  padding: 4px 10px; border: 1.5px solid var(--accent); border-radius: 6px; background: var(--surface);
+  color: var(--accent); cursor: pointer; font-size: 11px; font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif; transition: all 150ms ease;
+}
+.recording-play-btn:hover { background: var(--accent); color: white; }
+.waveform-container {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; margin-bottom: 16px; width: 100%; max-width: 500px;
+}
+.waveform-canvas { width: 100%; height: 80px; display: block; }
+
+/* Export & Share Summary */
+.share-container { text-align: center; width: 100%; }
+.share-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.share-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+.share-preview {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 16px; width: 100%; max-width: 400px; text-align: left;
+}
+.share-preview-title { font-family: 'Instrument Serif', serif; font-size: 20px; margin-bottom: 4px; }
+.share-preview-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+.share-preview-stat { background: var(--bg); border-radius: 8px; padding: 8px; text-align: center; }
+.share-preview-stat-value { font-family: 'Geist Mono', monospace; font-size: 18px; font-weight: 600; color: var(--accent); }
+.share-preview-stat-label { font-size: 10px; color: var(--muted); }
+.share-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.share-btn {
+  padding: 10px 20px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 13px; font-weight: 500; font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted); transition: all 150ms ease;
+}
+.share-btn:hover { border-color: var(--accent); color: var(--text); }
+.share-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+.share-text {
+  font-family: 'Geist Mono', monospace; font-size: 12px; background: var(--bg); border-radius: 8px;
+  padding: 12px; margin-top: 12px; white-space: pre-wrap; word-break: break-all; text-align: left;
+}
+.challenge-link {
+  font-family: 'Geist Mono', monospace; font-size: 12px; background: var(--accent-light); color: var(--accent);
+  padding: 8px 12px; border-radius: 8px; margin-top: 8px; word-break: break-all; text-align: left;
+}
+
+/* Auto-Tuner */
+.auto-tuner-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.auto-tuner-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.auto-tuner-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.auto-tuner-gauge {
+  width: 300px; height: 150px; margin-bottom: 16px; position: relative;
+}
+.auto-tuner-string-display {
+  font-family: 'Instrument Serif', serif; font-size: 48px; font-weight: 600;
+  margin-bottom: 4px; transition: color 200ms ease;
+}
+.auto-tuner-string-display.in-tune { color: var(--success); }
+.auto-tuner-string-display.out-of-tune { color: var(--danger); }
+.auto-tuner-cents { font-family: 'Geist Mono', monospace; font-size: 16px; color: var(--muted); margin-bottom: 8px; }
+.auto-tuner-direction { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.auto-tuner-strings { display: flex; gap: 8px; margin-bottom: 24px; }
+.auto-tuner-string-btn {
+  width: 56px; height: 56px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; font-size: 16px; font-weight: 600; font-family: 'Geist Mono', monospace; color: var(--text);
+  transition: all 150ms ease; display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.auto-tuner-string-btn:hover { border-color: var(--accent); }
+.auto-tuner-string-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+.auto-tuner-string-btn .auto-tuner-string-label { font-size: 9px; font-weight: 400; opacity: 0.7; }
+.auto-tuner-status {
+  padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  margin-bottom: 12px;
+}
+.auto-tuner-status.scanning { background: var(--accent-light); color: var(--accent); }
+.auto-tuner-status.tuned { background: #e8f5ec; color: var(--success); }
+.auto-tuner-play-ref {
+  padding: 8px 16px; border: 1.5px solid #E5E0DA; border-radius: 8px; background: var(--surface);
+  cursor: pointer; font-size: 12px; font-weight: 500; font-family: 'Instrument Sans', sans-serif; color: var(--muted);
+  transition: all 150ms ease;
+}
+.auto-tuner-play-ref:hover { border-color: var(--accent); color: var(--text); }
+
+/* Metronome with Tap Tempo */
+.metronome-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.metronome-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 8px; }
+.metronome-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 20px; text-align: center; }
+.metronome-bpm-display {
+  font-family: 'Geist Mono', monospace; font-size: 64px; font-weight: 600; color: var(--accent);
+  margin-bottom: 4px; cursor: pointer; transition: transform 100ms ease;
+}
+.metronome-bpm-display:hover { transform: scale(1.05); }
+.metronome-bpm-label { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.metronome-controls { display: flex; gap: 8px; margin-bottom: 16px; }
+.metronome-btn {
+  width: 48px; height: 48px; border: 1.5px solid #E5E0DA; border-radius: 10px; background: var(--surface);
+  cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;
+  transition: all 150ms ease; color: var(--text);
+}
+.metronome-btn:hover { border-color: var(--accent); }
+.metronome-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+.metronome-tap-btn {
+  padding: 14px 32px; border: 2px solid var(--accent); border-radius: 10px; background: var(--surface);
+  cursor: pointer; font-size: 16px; font-weight: 600; font-family: 'Instrument Sans', sans-serif;
+  color: var(--accent); transition: all 150ms ease; margin-bottom: 16px;
+}
+.metronome-tap-btn:hover { background: var(--accent); color: white; }
+.metronome-tap-btn.tapped { background: var(--accent); color: white; transform: scale(0.95); }
+.metronome-beat-display { display: flex; gap: 8px; margin-bottom: 16px; }
+.metronome-beat-dot {
+  width: 16px; height: 16px; border-radius: 50%; background: #E5E0DA; transition: all 150ms ease;
+}
+.metronome-beat-dot.active { background: var(--accent); transform: scale(1.2); }
+.metronome-beat-dot.accent-beat { background: var(--accent-light); }
+.metronome-beat-dot.accent-beat.active { background: var(--danger); }
+.metronome-play-btn {
+  padding: 12px 32px; border: none; border-radius: 10px; background: var(--accent); color: white;
+  font-size: 15px; font-weight: 600; font-family: 'Instrument Sans', sans-serif; cursor: pointer;
+  transition: all 150ms ease; margin-bottom: 12px;
+}
+.metronome-play-btn:hover { transform: scale(1.02); }
+.metronome-play-btn.playing { background: var(--danger); }
+.metronome-tempo-label { font-size: 12px; color: var(--muted); }
