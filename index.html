@@ -368,6 +368,14 @@ body {
 
 .song-card-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
 .song-card-artist { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.song-card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.song-card-difficulty {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.song-card-difficulty.beginner { color: #2d6a4f; background: #d8f3dc; }
+.song-card-difficulty.intermediate { color: #b45309; background: #fef3c7; }
+.song-card-difficulty.advanced { color: #b91c1c; background: #fee2e2; }
 .song-card-chords {
   font-family: 'Geist Mono', monospace;
   font-size: 12px;
@@ -906,6 +914,7 @@ const SONGS = {
     beatsPerChord: 4,
     strumming: "↓ ↓↑ ↑↓↑",
     strummingLabel: "Down · Down-Up · Up-Down-Up",
+    difficulty: "beginner",
   },
   "bad-moon": {
     name: "Bad Moon Rising",
@@ -914,6 +923,7 @@ const SONGS = {
     beatsPerChord: 4,
     strumming: "↓ ↓ ↑↓ ↑",
     strummingLabel: "Down · Down-Up · Down-Up",
+    difficulty: "beginner",
   },
   "three-birds": {
     name: "Three Little Birds",
@@ -922,6 +932,43 @@ const SONGS = {
     beatsPerChord: 4,
     strumming: "↓   ↑↓ ↑",
     strummingLabel: "Down · (skip) · Up-Down-Up",
+    difficulty: "beginner",
+  },
+  "stand-by-me": {
+    name: "Stand By Me",
+    artist: "Ben E. King",
+    chords: ["G", "Em", "C", "D", "G", "Em", "C", "D"],
+    beatsPerChord: 4,
+    strumming: "↓  ↓  ↑↓ ↑",
+    strummingLabel: "Down · Down · (skip) · Up-Down-Up",
+    difficulty: "beginner",
+  },
+  "let-it-be": {
+    name: "Let It Be",
+    artist: "The Beatles",
+    chords: ["C", "G", "Am", "F", "C", "G", "F", "G"],
+    beatsPerChord: 4,
+    strumming: "↓ ↓↑  ↑↓ ↑",
+    strummingLabel: "Down · Down-Up · (skip) · Up-Down-Up",
+    difficulty: "intermediate",
+  },
+  "house-rising-sun": {
+    name: "House of the Rising Sun",
+    artist: "The Animals",
+    chords: ["Am", "C", "D", "F", "Am", "E", "Am", "E"],
+    beatsPerChord: 4,
+    strumming: "↓  ↓  ↓  ↓↑ ↑↓",
+    strummingLabel: "Down · Down · Down · Down-Up-Up-Down",
+    difficulty: "intermediate",
+  },
+  "creep": {
+    name: "Creep",
+    artist: "Radiohead",
+    chords: ["G", "B", "C", "Cm", "G", "B", "C", "Cm"],
+    beatsPerChord: 4,
+    strumming: "↓   ↓   ↑↓ ↑↓",
+    strummingLabel: "Down · (skip) · Down · Up-Down-Up-Down",
+    difficulty: "advanced",
   },
 };
 
@@ -2086,7 +2133,10 @@ function showSongPicker() {
     card.className = 'song-card';
     card.innerHTML = `
       <div class="song-card-name">${song.name}</div>
-      <div class="song-card-artist">${song.artist}</div>
+      <div class="song-card-meta">
+        <span class="song-card-artist">${song.artist}</span>
+        <span class="song-card-difficulty ${song.difficulty}">${song.difficulty}</span>
+      </div>
       <div class="song-card-chords">${song.chords.join(' \u2192 ')}</div>
     `;
     card.addEventListener('click', () => startSong(key));

@@ -33,11 +33,20 @@ Open `index.html` in any browser. No build step, no dependencies, no server need
 
 ## Song Practice
 
-Pick from 3 songs with guided, mic-listened practice:
+Pick from 7 songs with guided, mic-listened practice, organized by difficulty:
 
+### Beginner
 - **Knockin' on Heaven's Door** (Bob Dylan) — G, D, Am, C
 - **Bad Moon Rising** (CCR) — D, A, G
 - **Three Little Birds** (Bob Marley) — A, D, E
+- **Stand By Me** (Ben E. King) — G, Em, C, D
+
+### Intermediate
+- **Let It Be** (The Beatles) — C, G, Am, F
+- **House of the Rising Sun** (The Animals) — Am, C, D, F, E
+
+### Advanced
+- **Creep** (Radiohead) — G, B, C, Cm
 
 Each song features:
 
