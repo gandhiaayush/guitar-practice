@@ -1,22 +1,28 @@
 // ==================== AUDIO ENGINE ====================
 var audioCtx = null;
 
-async function initMic() {
-  try {
-    state.audio.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    var source = audioCtx.createMediaStreamSource(state.audio.stream);
-    state.audio.analyser = audioCtx.createAnalyser();
-    state.audio.analyser.fftSize = 8192;
-    state.audio.analyser.smoothingTimeConstant = 0.3;
-    source.connect(state.audio.analyser);
-    state.audio.micActive = true;
-    state.audio.animFrameId = requestAnimationFrame(audioLoop);
-    return true;
-  } catch (e) {
-    console.error('Mic error:', e);
-    return false;
-  }
+function initMic() {
+  return new Promise(function(resolve) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      resolve(false);
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+      state.audio.stream = stream;
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var source = audioCtx.createMediaStreamSource(stream);
+      state.audio.analyser = audioCtx.createAnalyser();
+      state.audio.analyser.fftSize = 8192;
+      state.audio.analyser.smoothingTimeConstant = 0.3;
+      source.connect(state.audio.analyser);
+      state.audio.micActive = true;
+      state.audio.animFrameId = requestAnimationFrame(audioLoop);
+      resolve(true);
+    }).catch(function(e) {
+      console.error('Mic error:', e);
+      resolve(false);
+    });
+  });
 }
 
 function stopMic() {

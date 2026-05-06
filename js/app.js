@@ -130,6 +130,12 @@ function showNavHub() {
 }
 
 // ==================== MIC TOGGLE ====================
+function startUnifiedLoop() {
+  // Audio loop is started when mic is enabled
+  // This function is called on init but doesn't need to do anything
+  // The audioLoop in audio.js handles the actual work
+}
+
 function initMicToggle() {
   var toggle = document.getElementById('mic-toggle');
   var status = document.getElementById('mic-status');
@@ -192,6 +198,19 @@ function init() {
   handleChallengeLink();
   startUnifiedLoop();
   showScreen('setup'); // Show the first screen
+}
+
+function allowMic() {
+  initMic().then(function(ok) {
+    document.getElementById('mic-overlay').classList.remove('active');
+    var status = document.getElementById('mic-status');
+    if (status) { status.textContent = ok ? 'On' : 'Error'; }
+  });
+}
+
+function skipMic() {
+  document.getElementById('mic-overlay').classList.remove('active');
+  showScreen('setup');
 }
 
 document.addEventListener('DOMContentLoaded', init);
