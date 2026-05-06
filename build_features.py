@@ -1,4 +1,4 @@
-
+features_js = r"""
 // ==================== FEATURE 1: CHORD TRANSITION TRAINER ====================
 var transitionTrainer = { active: false, from: null, to: null, timerId: null, countdown: 3, state: 'idle', pairTimes: {} };
 
@@ -961,3 +961,8 @@ function updateTempoLabel() {
   var el = document.getElementById('tempo-label');
   if (el) el.textContent = label;
 }
+""";
+
+with open('js/features.js', 'w') as f:
+    f.write(features_js)
+print("features.js written")

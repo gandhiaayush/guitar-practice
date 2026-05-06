@@ -1,5 +1,5 @@
 // ==================== AUDIO ENGINE ====================
-let audioCtx = null;
+var audioCtx = null;
 
 async function initMic() {
   try {

@@ -1,4 +1,5 @@
-
+# Build practice.js with proper ES5 syntax
+practice_js = r"""
 // ==================== STATE ====================
 var state = {
   screen: 'setup',
@@ -427,3 +428,8 @@ function showProgression() {
 function showEarTraining() {
   showScreen('ear');
 }
+"""
+
+with open('js/practice.js', 'w') as f:
+    f.write(practice_js)
+print("practice.js written")
