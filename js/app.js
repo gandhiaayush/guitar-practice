@@ -188,16 +188,21 @@ function saveCustomSong(song) {
 
 // ==================== INIT ====================
 function init() {
-  buildChordTemplates(); // from data.js
-  loadHistory();
-  loadAchievements();
-  loadRecordings();
-  loadCustomSongs();
-  initSetup();
-  initSongControls();
-  handleChallengeLink();
-  startUnifiedLoop();
-  showScreen('setup'); // Show the first screen
+  try {
+    if (typeof buildChordTemplates === 'function') buildChordTemplates();
+    if (typeof loadHistory === 'function') loadHistory();
+    if (typeof loadAchievements === 'function') loadAchievements();
+    if (typeof loadRecordings === 'function') loadRecordings();
+    if (typeof loadCustomSongs === 'function') loadCustomSongs();
+    if (typeof initSetup === 'function') initSetup();
+    if (typeof initSongControls === 'function') initSongControls();
+    if (typeof handleChallengeLink === 'function') handleChallengeLink();
+    if (typeof startUnifiedLoop === 'function') startUnifiedLoop();
+    showScreen('setup');
+  } catch(e) {
+    console.error('Init error:', e);
+    document.body.innerHTML += '<div style="padding:20px;color:red;">Error: ' + e.message + '</div>';
+  }
 }
 
 function allowMic() {
